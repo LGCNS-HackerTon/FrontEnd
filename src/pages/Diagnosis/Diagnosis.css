@@ -59,3 +59,31 @@ progress {
 .panel > .stack {
   margin-bottom: 18px;
 }
+.step-actions {
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.dropzone {
+  border-radius: 10px;
+}
+.dropzone.dragging {
+  background: #edf4ff;
+  outline: 2px dashed #4978dc;
+  outline-offset: 4px;
+}
+.pending-item {
+  background: #eff5ff;
+  border-color: #d4e2fb;
+}
+.pending-item .badge {
+  color: #2453bd;
+}
+.choice:has(:checked) {
+  font-weight: 800;
+}
+.choice:has(:checked)::after {
+  content: '✓' / '';
+  margin-left: auto;
+}

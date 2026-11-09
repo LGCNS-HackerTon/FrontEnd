@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Label from '../../components/common/Label.jsx';
 import Notice from '../../components/common/Notice.jsx';
 import Field from '../../components/common/Field.jsx';
@@ -42,6 +42,7 @@ export default function Diagnosis({ done }) {
     answerAll,
     submit,
   } = useDiagnosis(done);
+  const [dragging, setDragging] = useState(null);
   const fieldError = (name) => (error?.field === name ? error.message : null);
   const money = (name, label, required, min, hint) => (
     <Field
@@ -60,17 +61,49 @@ export default function Diagnosis({ done }) {
       error={fieldError(name)}
     />
   );
+  // 끌어 놓은 파일도 같은 pickFile → readDocs 검증을 거쳐요 (드롭에는 accept가 적용되지 않아요).
   const file = (name, label, hint) => (
-    <Field
-      name={name}
-      label={label}
-      type="file"
-      accept={ACCEPT}
-      hint={files[name] ? `선택한 파일: ${files[name].name}` : hint}
-      onChange={pickFile}
-      error={fieldError(name)}
-    />
+    <div
+      className={'dropzone' + (dragging === name ? ' dragging' : '')}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragging(name);
+      }}
+      onDragLeave={() => setDragging(null)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragging(null);
+        pickFile({ target: { name, files: e.dataTransfer.files } });
+      }}
+    >
+      <Field
+        name={name}
+        label={label}
+        type="file"
+        accept={ACCEPT}
+        hint={
+          files[name] ? `선택한 파일: ${files[name].name}` : `${hint} 파일을 끌어 놓아도 돼요.`
+        }
+        onChange={pickFile}
+        error={fieldError(name)}
+      />
+    </div>
   );
+  const stepActions = (label, onNext) => (
+    <div className="step-actions">
+      <button
+        type="button"
+        className="secondary"
+        onClick={() => (stage === 'address' ? go('/') : back())}
+      >
+        이전
+      </button>
+      <button className="primary" type={onNext ? 'button' : 'submit'} onClick={onNext}>
+        {label}
+      </button>
+    </div>
+  );
+  const arrow = <span aria-hidden="true">→</span>;
   const heading = (title) => (
     <h1 id="diagnosis-heading" tabIndex={-1}>
       {title}
@@ -83,13 +116,12 @@ export default function Diagnosis({ done }) {
   const shown = question && ocrAnswer(question.code);
   return (
     <section className="narrow">
-      <button
-        className="quiet back"
-        disabled={busy}
-        onClick={() => (stage === 'address' ? go('/') : back())}
-      >
-        ← {stage === 'address' ? '첫 화면' : '이전'}
-      </button>
+      {((stage === 'question' && step > 0) ||
+        (stage === 'amounts' && pending.length > 0)) && (
+        <button className="quiet compact back" disabled={busy} onClick={() => show('question', 0)}>
+          ← 첫 질문으로
+        </button>
+      )}
       {['question', 'amounts'].includes(stage) && pending.length > 0 && (
         <progress
           value={stage === 'amounts' ? pending.length : step + 1}
@@ -119,9 +151,7 @@ export default function Diagnosis({ done }) {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
-            <button className="primary full">
-              다음 <span aria-hidden="true">→</span>
-            </button>
+            {stepActions(<>다음 {arrow}</>)}
           </form>
         )}
         {stage === 'upload' && (
@@ -164,12 +194,10 @@ export default function Diagnosis({ done }) {
                 </Notice>
               )}
               {!error?.field && !ocrBlocked && <ErrorBox error={error} />}
-              <button className="primary full">
-                {busy ? '서류를 읽는 중…' : '서류 읽기'}
-              </button>
+              {stepActions(busy ? '서류를 읽는 중…' : '서류 읽기')}
               {error?.code === 'ADDRESS_MISMATCH' && (
                 <button type="button" className="secondary full" onClick={() => show('address')}>
-                  주소 고치기
+                  주소 수정하기
                 </button>
               )}
               {error?.code === 'OCR_UNREADABLE' && (
@@ -190,7 +218,7 @@ export default function Diagnosis({ done }) {
             )}
             <p className="intro">
               서류에서 확인한 답은 그대로 쓰고, 확인하지 못한 질문만 물어볼게요. 서류에서
-              읽은 답이 틀렸다면 고칠 수 있어요.
+              읽은 답이 틀렸다면 수정할 수 있어요.
             </p>
             {warnings.map((text) => (
               <Notice kind="warning" key={text}>
@@ -202,8 +230,11 @@ export default function Diagnosis({ done }) {
                 <h2 className="section-heading">직접 답할 질문 {pending.length}개</h2>
                 <ul className="stack">
                   {pending.map((q) => (
-                    <li className="card evidence-item" key={q.code}>
-                      <small className="muted">{q.sectionName}</small>
+                    <li className="card evidence-item pending-item" key={q.code}>
+                      <p className="evidence-answer">
+                        <span className="badge">직접 답해요</span>
+                        <small className="muted">{q.sectionName}</small>
+                      </p>
                       <p className="evidence-question">{q.text}</p>
                     </li>
                   ))}
@@ -226,14 +257,17 @@ export default function Diagnosis({ done }) {
                     disabled={pending.includes(q)}
                     onClick={() => ask(q.code)}
                   >
-                    {pending.includes(q) ? '직접 답할게요' : '고치기'}
+                    {pending.includes(q) ? '직접 답할게요' : '수정하기'}
                   </button>
                 </li>
               ))}
             </ul>
-            <button className="primary full" onClick={() => show(pending.length ? 'question' : 'amounts')}>
-              {pending.length ? '질문에 답하기' : '금액 입력하기'} <span aria-hidden="true">→</span>
-            </button>
+            {stepActions(
+              <>
+                {pending.length ? '질문에 답하기' : '금액 입력하기'} {arrow}
+              </>,
+              () => show(pending.length ? 'question' : 'amounts'),
+            )}
           </>
         )}
         {question && (
@@ -250,12 +284,17 @@ export default function Diagnosis({ done }) {
             <p className="intro">{question.help}</p>
             {shown?.status === 'CONFIRMED' && (
               <Notice>
-                서류에서는 &lsquo;{answerLabel[shown.answer]}&rsquo;로 읽었어요. 근거:{' '}
-                {shown.evidence}
+                서류에서는 &lsquo;{answerLabel[shown.answer]}&rsquo;로 읽었어요.
+                <br />
+                근거: {shown.evidence}
               </Notice>
             )}
             {shown?.status === 'UNCONFIRMED' && shown.evidence && (
-              <Notice>서류에서 찾은 내용: {shown.evidence}</Notice>
+              <Notice>
+                서류로는 확인하지 못했어요.
+                <br />
+                근거: {shown.evidence}
+              </Notice>
             )}
             <fieldset className="choices">
               <legend className="sr-only">답변 선택</legend>
@@ -287,10 +326,11 @@ export default function Diagnosis({ done }) {
                 0,
                 '근저당권이 여러 개라면 채권최고액을 모두 더해 주세요.',
               )}
-            <button className="primary full">
-              {step + 1 < pending.length ? '다음 질문' : '금액 입력하기'}{' '}
-              <span aria-hidden="true">→</span>
-            </button>
+            {stepActions(
+              <>
+                {step + 1 < pending.length ? '다음 질문' : '금액 입력하기'} {arrow}
+              </>,
+            )}
           </form>
         )}
         {stage === 'amounts' && (
@@ -323,13 +363,15 @@ export default function Diagnosis({ done }) {
               {(!error?.field || !Object.hasOwn(amounts, error.field)) && (
                 <ErrorBox error={error} />
               )}
-              <button className="primary full" disabled={busy}>
-                {busy
-                  ? '결과를 확인하는 중…'
-                  : error && !error.field
-                    ? '다시 시도'
-                    : '진단 결과 보기'}
-              </button>
+              {stepActions(
+                busy ? (
+                  '결과를 확인하는 중…'
+                ) : error && !error.field ? (
+                  '다시 시도'
+                ) : (
+                  <>진단 결과 보기 {arrow}</>
+                ),
+              )}
             </fieldset>
           </form>
         )}
