@@ -1,12 +1,26 @@
 import { useState, useEffect } from 'react';
-import { getQuestions, diagnose } from '../../api/diagnosis.js';
-export const PREPARATION_STEP = -1;
+import { getQuestions, readRegistry, diagnose } from '../../api/diagnosis.js';
+
+const FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+function fileError(field, file) {
+  if (!file) return null;
+  if (!FILE_TYPES.includes(file.type))
+    return { field, message: 'JPG·PNG·PDF 파일만 올릴 수 있어요.' };
+  if (file.size > MAX_FILE_BYTES) return { field, message: '10MB 이하 파일만 올릴 수 있어요.' };
+  return null;
+}
 
 // 진단 입력 상태를 화면과 분리해 이전 단계로 돌아가도 값을 유지해요.
+// 단계: address → upload → review(서류 확인 결과) → question(확인 못 한 질문만) → amounts
 export default function useDiagnosis(done) {
-  // 준비 → 질문 인덱스 → 금액 입력 순서예요.
-  const [step, setStep] = useState(PREPARATION_STEP),
+  const [stage, setStage] = useState('address'),
+    [step, setStep] = useState(0),
+    [address, setAddress] = useState(''),
+    [files, setFiles] = useState({ registry: null, buildingLedger: null }),
     [questions, setQuestions] = useState([]),
+    [ocr, setOcr] = useState(null),
+    [asked, setAsked] = useState([]),
     [answers, setAnswers] = useState({});
   const [amounts, setAmounts] = useState({
     deposit: '',
@@ -16,43 +30,104 @@ export default function useDiagnosis(done) {
   });
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(null);
-  const question = questions[step],
-    isFinal = step >= 0 && step === questions.length;
-  const update = (e) => {
-    setAmounts({ ...amounts, [e.target.name]: e.target.value });
-    setError(null);
-  };
-  const move = (next) => {
-    setStep(next);
+
+  const ocrAnswer = (code) => ocr?.answers.find((item) => item.code === code);
+  const confirmed = (code) => ocrAnswer(code)?.status === 'CONFIRMED';
+  // 판독 못 한 질문은 NO로 채우지 않고 사용자에게 물어요 (docs/09 2절).
+  const pending = questions.filter((q) => !confirmed(q.code) || asked.includes(q.code));
+  const question = stage === 'question' ? pending[step] : null;
+
+  const show = (nextStage, nextStep = 0) => {
+    setStage(nextStage);
+    setStep(nextStep);
     setError(null);
     window.scrollTo(0, 0);
   };
   useEffect(() => {
     document.getElementById('diagnosis-heading')?.focus({ preventScroll: true });
-  }, [step]);
-  async function begin() {
-    if (questions.length) {
-      move(0);
-      return;
-    }
+  }, [stage, step]);
+
+  const update = (e) => {
+    setAmounts({ ...amounts, [e.target.name]: e.target.value });
+    setError(null);
+  };
+  const pickFile = (e) => {
+    setFiles({ ...files, [e.target.name]: e.target.files[0] ?? null });
+    setError(null);
+  };
+
+  function back() {
+    if (stage === 'upload') return show('address');
+    if (stage === 'review') return show('upload');
+    if (stage === 'question')
+      return step > 0 ? show('question', step - 1) : show(ocr ? 'review' : 'upload');
+    if (stage === 'amounts')
+      return pending.length ? show('question', pending.length - 1) : show('review');
+  }
+  function next() {
+    if (stage === 'question' && step + 1 < pending.length) return show('question', step + 1);
+    show('amounts');
+  }
+
+  async function loadQuestions() {
+    if (questions.length) return questions;
+    const data = await getQuestions();
+    if (
+      !Array.isArray(data) ||
+      data.length !== 10 ||
+      new Set(data.map((item) => item.code)).size !== 10
+    )
+      throw new Error('질문 목록을 확인할 수 없어요.');
+    const sorted = [...data].sort((a, b) => a.order - b.order);
+    setQuestions(sorted);
+    return sorted;
+  }
+
+  async function readDocs(e) {
+    e.preventDefault();
+    const invalid =
+      (!files.registry && { field: 'registry', message: '등기부등본을 올려 주세요.' }) ||
+      fileError('registry', files.registry) ||
+      fileError('buildingLedger', files.buildingLedger);
+    if (invalid) return setError(invalid);
     setBusy(true);
     setError(null);
     try {
-      const data = await getQuestions();
-      if (
-        !Array.isArray(data) ||
-        data.length !== 10 ||
-        new Set(data.map((item) => item.code)).size !== 10
-      )
-        throw new Error('질문 목록을 확인할 수 없어요.');
-      setQuestions([...data].sort((a, b) => a.order - b.order));
-      move(0);
-    } catch (e) {
-      setError(e);
+      await loadQuestions();
+      const result = await readRegistry({ address: address.trim(), ...files });
+      // 주소가 다른 서류의 결과는 쓰지 않아요.
+      if (result.addressMatch === 'MISMATCH') {
+        setOcr(null);
+        setError({ code: 'ADDRESS_MISMATCH' });
+        return;
+      }
+      setOcr(result);
+      setAsked([]);
+      setAnswers(
+        Object.fromEntries(
+          result.answers
+            .filter((item) => item.status === 'CONFIRMED')
+            .map((item) => [item.code, item.answer]),
+        ),
+      );
+      setAmounts((prev) => ({ ...prev, mortgageMax: result.mortgageMax ?? '' }));
+      show('review');
+    } catch (err) {
+      setError(err);
     } finally {
       setBusy(false);
     }
   }
+
+  // 판독 실패(422) 때 서류 없이 10개를 직접 답해요.
+  function answerAll() {
+    setOcr(null);
+    setAsked([]);
+    setAnswers({});
+    show('question');
+  }
+  const ask = (code) => setAsked([...asked, code]);
+
   async function submit(e) {
     e.preventDefault();
     setBusy(true);
@@ -69,8 +144,12 @@ export default function useDiagnosis(done) {
       // 기록 제목(보증금·시세)에 쓰려고 요청 값도 함께 넘겨요.
       done(await diagnose(request), request);
     } catch (error) {
-      if (error.code === 'INVALID_INPUT' && error.field === 'mortgageMax')
-        setStep(questions.findIndex((item) => item.needsAmount));
+      const mortgageStep = pending.findIndex((item) => item.needsAmount);
+      // 근저당 금액을 질문에서 받았다면 그 질문으로, 아니면 금액 단계 입력칸에 머물러요.
+      if (error.code === 'INVALID_INPUT' && error.field === 'mortgageMax' && mortgageStep >= 0) {
+        setStage('question');
+        setStep(mortgageStep);
+      }
       setError(error);
       if (error.field)
         requestAnimationFrame(() => document.getElementById(error.field)?.focus());
@@ -80,8 +159,18 @@ export default function useDiagnosis(done) {
   }
 
   return {
+    stage,
     step,
+    address,
+    setAddress,
+    files,
+    pickFile,
     questions,
+    pending,
+    ocrAnswer,
+    confirmed,
+    warnings: ocr?.warnings ?? [],
+    ask,
     answers,
     setAnswers,
     amounts,
@@ -89,10 +178,12 @@ export default function useDiagnosis(done) {
     error,
     setError,
     question,
-    isFinal,
     update,
-    move,
-    begin,
+    show,
+    back,
+    next,
+    readDocs,
+    answerAll,
     submit,
   };
 }

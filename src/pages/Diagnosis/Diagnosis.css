@@ -38,3 +38,24 @@ progress {
   width: 17px;
   height: 17px;
 }
+.evidence-item {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+}
+.evidence-question {
+  font-weight: 750;
+}
+.evidence-answer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.evidence-item .quiet {
+  justify-self: start;
+  margin-left: -12px;
+}
+.panel > .stack {
+  margin-bottom: 18px;
+}
