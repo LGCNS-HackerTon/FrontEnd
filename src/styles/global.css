@@ -1,0 +1,89 @@
+@import 'tailwindcss';
+:root {
+  font-family: 'Pretendard', 'Malgun Gothic', system-ui, sans-serif;
+  color: #16243b;
+  background: #f7f9fd;
+  font-synthesis: none;
+  line-height: 1.55;
+  --blue: #2458d5;
+  --muted: #52637b;
+  --border: #dce5f2;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+a {
+  color: var(--blue);
+  text-underline-offset: 4px;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #507ffa;
+  outline-offset: 3px;
+}
+p,
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+h1 {
+  font-size: clamp(1.9rem, 4vw, 3.1rem);
+  font-weight: 850;
+  letter-spacing: -0.06em;
+  line-height: 1.22;
+}
+h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+h3 {
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.frame {
+  width: min(1120px, calc(100% - 48px));
+  margin: auto;
+}
+main {
+  min-height: 70vh;
+  padding-block: 32px 52px;
+}
+@media (max-width: 720px) {
+  .frame {
+    width: calc(100% - 28px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: background 0.15s;
+  }
+}
+fieldset {
+  min-width: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+button,
+input {
+  font: inherit;
+}
+
+h1, h2, h3, p {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
