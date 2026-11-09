@@ -9,7 +9,7 @@ test('만원 단위 금액을 억·만 원으로 읽기 쉽게 바꾼다', () =>
   assert.equal(formatMoney(0), '0만 원');
 });
 
-test('다시 진단하면 같은 기록을 덮어쓰고 입력값을 함께 저장한다', async () => {
+test('기록은 최근 5건을 처음 진단한 순서로 두고, 다시 진단하면 제자리에서 덮어쓴다', async () => {
   const store = new Map();
   globalThis.localStorage = {
     getItem: (key) => store.get(key) ?? null,
@@ -17,13 +17,20 @@ test('다시 진단하면 같은 기록을 덮어쓰고 입력값을 함께 저�
   };
   const { saveDiagnosis, readHistory } = await import('../src/services/history.js');
   const request = { deposit: 24000, salePrice: 28000, mortgageMax: 3600, seniorDeposit: null, answers: [] };
-  saveDiagnosis('a@b.c', { grade: 'DANGER', gradeLabel: '위험', score: 70 }, request);
-  const [first] = readHistory('a@b.c');
-  assert.deepEqual(first.request, request);
-  saveDiagnosis('a@b.c', { grade: 'CAUTION', gradeLabel: '주의', score: 40 }, { ...request, deposit: 20000 }, first.id);
-  const items = readHistory('a@b.c');
-  assert.equal(items.length, 1);
-  assert.equal(items[0].id, first.id);
-  assert.equal(items[0].score, 40);
-  assert.equal(items[0].request.deposit, 20000);
+  for (let n = 1; n <= 6; n++) {
+    saveDiagnosis('a@b.c', { grade: 'DANGER', gradeLabel: '위험', score: n }, request);
+    await new Promise((resolve) => setTimeout(resolve, 2));
+  }
+  let items = readHistory('a@b.c');
+  assert.deepEqual(items.map((item) => item.score), [2, 3, 4, 5, 6]);
+  assert.deepEqual(items[0].request, request);
+  const target = items[1];
+  saveDiagnosis('a@b.c', { grade: 'CAUTION', gradeLabel: '주의', score: 40 }, { ...request, deposit: 20000 }, target.id);
+  items = readHistory('a@b.c');
+  assert.equal(items.length, 5);
+  assert.equal(items[1].id, target.id);
+  assert.equal(items[1].date, target.date);
+  assert.equal(items[1].score, 40);
+  assert.equal(items[1].request.deposit, 20000);
+  assert.ok(items[1].updatedAt);
 });
