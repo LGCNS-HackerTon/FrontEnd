@@ -51,6 +51,6 @@ App이 로그인 상태와 진단 결과를 보관합니다. Diagnosis는 answer
 
 ## 협업
 
-작업 전에 AGENTS.md와 관련 docs를 읽습니다. 매 pull에서 이전 HEAD와 새 HEAD 사이의 Markdown 변경을 확인하고 바뀐 규칙을 먼저 적용합니다. 공통 문서의 원본은 BackEnd이며 팀장이 FrontEnd에 동기화합니다. 프론트 구현 설명은 이 README에 최신화합니다.
+작업 전에 docs/AGENTS.md와 관련 docs를 읽습니다. 매 pull에서 이전 HEAD와 새 HEAD 사이의 Markdown 변경을 확인하고 바뀐 규칙을 먼저 적용합니다. 공통 문서의 원본은 BackEnd이며 팀장이 FrontEnd에 동기화합니다. 프론트 구현 설명은 이 README에 최신화합니다.
 
 팀의 이슈, 브랜치, PR 절차(docs/07-git-rules.md)를 따릅니다. 환경변수의 실제 비밀값은 커밋하지 않습니다.
