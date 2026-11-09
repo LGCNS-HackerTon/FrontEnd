@@ -98,58 +98,68 @@
   font-weight: 750;
 }
 
-/* 점수 상자 아래 그래프: 0(위험) → 100(안전) */
+/* 점수 그래프: 3구간 그라데이션 막대 + 막대 위 내 점수 마크 (3차 피드백) */
 .gauge {
-  margin: 14px 0 6px;
-}
-.gauge-track {
   position: relative;
+  margin: 18px 0 8px;
+  padding-top: 40px;
+}
+.gauge-bar {
+  height: 16px;
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    #d64545 0%,
+    #d64545 32%,
+    #f0b429 46%,
+    #f0b429 62%,
+    #2f9e62 78%,
+    #2f9e62 100%
+  );
+}
+.gauge-pin {
+  position: absolute;
+  top: 0;
+  left: clamp(30px, var(--at), calc(100% - 30px));
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+}
+.gauge-pin span {
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: #16243b;
+  color: #ffffff;
+  font-weight: 850;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.gauge-pin::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-top-color: #16243b;
+  border-bottom: 0;
+}
+.gauge-zones {
   display: grid;
   grid-template-columns: 40fr 30fr 30fr;
-  height: 28px;
-  border-radius: 99px;
-  overflow: visible;
-  font-size: 0.78rem;
+  margin-top: 6px;
+  font-size: 0.8rem;
   font-weight: 750;
 }
-.gauge-zone {
-  display: grid;
-  place-items: center;
+.gauge-zones span {
+  text-align: center;
 }
-.gauge-zone.danger {
-  background: #fff1f0;
+.gauge-zones .danger {
   color: #8c2821;
-  border-radius: 99px 0 0 99px;
 }
-.gauge-zone.caution {
-  background: #fff6e4;
+.gauge-zones .caution {
   color: #765019;
 }
-.gauge-zone.safe {
-  background: #eaf8f0;
+.gauge-zones .safe {
   color: #195f3b;
-  border-radius: 0 99px 99px 0;
-}
-.gauge-marker {
-  position: absolute;
-  top: -6px;
-  bottom: -6px;
-  width: 4px;
-  margin-left: -2px;
-  background: #16243b;
-  border-radius: 99px;
-}
-.gauge-scale {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-.gauge-scale span[style] {
-  position: absolute;
-  transform: translateX(-50%);
 }
 
 /* 항목별로 깎인 점수 */

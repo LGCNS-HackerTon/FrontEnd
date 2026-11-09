@@ -50,18 +50,16 @@ export default function Result({ result, start }) {
           <small>부채비율 {result.debtRatio}%</small>
         </div>
       </div>
-      <div className="gauge" role="img" aria-label={`안전 점수 100점 중 ${score}점`}>
-        <div className="gauge-track" aria-hidden="true">
-          <span className="gauge-zone danger">위험</span>
-          <span className="gauge-zone caution">주의</span>
-          <span className="gauge-zone safe">안전</span>
-          <span className="gauge-marker" style={{ left: `${score}%` }} />
+      {/* 점수 가시화: 위험(빨강) 0~40 · 주의(노랑) 41~70 · 안전(초록) 71~100, 내 점수는 막대 위 마크 */}
+      <div className="gauge" role="img" aria-label={`안전 점수 100점 중 ${score}점, ${result.gradeLabel}`}>
+        <div className="gauge-pin" style={{ '--at': `${score}%` }} aria-hidden="true">
+          <span>{score}점</span>
         </div>
-        <div className="gauge-scale" aria-hidden="true">
-          <span>0</span>
-          <span style={{ left: '40%' }}>40</span>
-          <span style={{ left: '70%' }}>70</span>
-          <span>100</span>
+        <div className="gauge-bar" aria-hidden="true" />
+        <div className="gauge-zones" aria-hidden="true">
+          <span className="danger">위험 0~40</span>
+          <span className="caution">주의 41~70</span>
+          <span className="safe">안전 71~100</span>
         </div>
       </div>
       {result.warnings.map((w) => (
