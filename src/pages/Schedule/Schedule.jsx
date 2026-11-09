@@ -165,7 +165,6 @@ export default function Schedule({ owner }) {
                               onChange={() => toggle(item.order)}
                               aria-label={`${item.title} 완료`}
                             />
-                            완료
                           </label>
                         </li>
                       );

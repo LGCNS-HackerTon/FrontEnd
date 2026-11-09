@@ -74,27 +74,21 @@
 
 
 /* 체크리스트: 완료 체크와 진행률 */
+/* 완료 표시는 버튼 없이 체크박스만. 누르는 영역은 44px로 유지해요 */
 .task-check {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: grid;
+  place-items: center;
   align-self: start;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid #cbd8ea;
-  border-radius: 10px;
-  font-weight: 750;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
 }
 .task-check input {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  margin: 0;
   accent-color: var(--blue);
-}
-.task-check:has(:checked) {
-  background: #eaf2ff;
-  border-color: #4978dc;
-  color: #2049a8;
+  cursor: pointer;
 }
 .task.done h3 {
   color: var(--muted);
