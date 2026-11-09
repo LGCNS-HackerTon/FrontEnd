@@ -2,12 +2,26 @@ import React from 'react';
 import Label from '../../components/common/Label.jsx';
 import Notice from '../../components/common/Notice.jsx';
 import Clause from './Clause.jsx';
+import { safeScore, splitActions } from '../../services/score.js';
 import './Result.css';
+
+// "~하세요"처럼 사용자가 할 일을 말하는 문장은 버건디로 보여줘요.
+function Actions({ text }) {
+  return splitActions(text).map(({ sentence, action }, index) => (
+    <React.Fragment key={index}>
+      {index > 0 && ' '}
+      {action ? <span className="action-text">{sentence}</span> : sentence}
+    </React.Fragment>
+  ));
+}
+
 export default function Result({ result, start }) {
   const all = [
     ...result.factors,
     { code: 'common', title: '공통으로 확인할 내용', ...result.commonAdvice },
   ];
+  const score = safeScore(result.score);
+  const lost = 100 - score;
   return (
     <section className="content">
       <Label>등기부 진단 결과</Label>
@@ -24,24 +38,54 @@ export default function Result({ result, start }) {
       <div className={'score card ' + result.grade.toLowerCase()}>
         <div>
           <span className="badge">{result.gradeLabel}</span>
-          <h2>{result.gradeMessage}</h2>
-          <p>{result.aiExplanation}</p>
+          <h2>
+            <Actions text={result.gradeMessage} />
+          </h2>
+          <p>
+            <Actions text={result.aiExplanation} />
+          </p>
         </div>
         <div className="number">
-          <strong>{result.score}</strong>점<small>부채비율 {result.debtRatio}%</small>
+          <strong>{score}</strong>점<small>100점에서 {lost}점 깎였어요</small>
+          <small>부채비율 {result.debtRatio}%</small>
+        </div>
+      </div>
+      <div className="gauge" role="img" aria-label={`안전 점수 100점 중 ${score}점`}>
+        <div className="gauge-track" aria-hidden="true">
+          <span className="gauge-zone danger">위험</span>
+          <span className="gauge-zone caution">주의</span>
+          <span className="gauge-zone safe">안전</span>
+          <span className="gauge-marker" style={{ left: `${score}%` }} />
+        </div>
+        <div className="gauge-scale" aria-hidden="true">
+          <span>0</span>
+          <span style={{ left: '40%' }}>40</span>
+          <span style={{ left: '70%' }}>70</span>
+          <span>100</span>
         </div>
       </div>
       {result.warnings.map((w) => (
         <Notice key={w} kind="warning">
-          {w}
+          <Actions text={w} />
         </Notice>
       ))}
-      <h2 className="section-heading">확인할 항목과 필요한 조치</h2>
+      <h2 className="section-heading">점수가 깎인 이유와 확인할 조치</h2>
       <div className="stack">
         {all.map((factor) => (
           <article className="card action-card" key={factor.code}>
-            <h3>{factor.title}</h3>
-            {factor.explanation && <p>{factor.explanation}</p>}
+            <div className="factor-head">
+              <h3>{factor.title}</h3>
+              {factor.code !== 'common' && (
+                <span className="points">
+                  {factor.score > 0 ? `−${factor.score}점` : '확인 필요'}
+                </span>
+              )}
+            </div>
+            {factor.explanation && (
+              <p>
+                <Actions text={factor.explanation} />
+              </p>
+            )}
             {factor.askAgent && (
               <div className="ask">
                 <strong>중개사에게 물어보세요</strong>
@@ -52,7 +96,9 @@ export default function Result({ result, start }) {
           </article>
         ))}
       </div>
-      <Notice>{result.disclaimer}</Notice>
+      <Notice>
+        <Actions text={result.disclaimer} />
+      </Notice>
       <div className="actions">
         <button className="primary" onClick={() => start('/schedule')}>
           일정표 만들기 →

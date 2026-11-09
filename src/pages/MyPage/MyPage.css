@@ -63,10 +63,20 @@ details[open] .history-toggle::after {
   background: #eaf8f0;
   color: #195f3b;
 }
-.logout {
-  display: block;
-  margin: 36px auto 0;
-  color: var(--muted);
+/* 로그아웃: 프로필 박스 오른쪽 아래 붉은 버튼 (2차 피드백) */
+.profile .logout {
+  margin-left: auto;
+  align-self: flex-end;
+  min-height: 44px;
+  padding: 9px 16px;
+  font-weight: 760;
+  color: #ffffff;
+  background: #a72126;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+.profile .logout:hover {
+  background: #8c2821;
 }
 .history-toggle {
   font-size: 0.85rem;
@@ -86,6 +96,7 @@ details[open] .history-toggle::after {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  margin-bottom: 14px;
 }
 .history-amounts {
   display: grid;

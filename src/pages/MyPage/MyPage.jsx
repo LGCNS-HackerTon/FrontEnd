@@ -3,6 +3,7 @@ import Label from '../../components/common/Label.jsx';
 import { readHistory, formatMoney } from '../../services/history.js';
 // shortcut: 질문 문구는 docs/01과 같은 Mock 목록에서 읽어요. 서버 문구가 달라지면 기록에 문구도 저장하도록 바꿔요.
 import { questions } from '../../api/mock/questions.js';
+import { safeScore } from '../../services/score.js';
 import { readProfile } from '../../services/account.js';
 import './MyPage.css';
 const answerLabel = { YES: '예', NO: '아니오', UNKNOWN: '모르겠어요' };
@@ -76,6 +77,9 @@ export default function MyPage({ email, start, logout, edit }) {
           <h2>{profile.name}님</h2>
           <p>{profile.email}</p>
         </div>
+        <button className="logout" onClick={logout}>
+          로그아웃
+        </button>
       </article>
       <h2 className="section-heading">최근 등기부 진단</h2>
       <p className="muted">
@@ -100,7 +104,7 @@ export default function MyPage({ email, start, logout, edit }) {
                   </div>
                   <div className="history-grade">
                     <span className="badge">{item.gradeLabel}</span>
-                    <strong>{item.score}점</strong>
+                    <strong>{safeScore(item.score)}점</strong>
                     <span className="muted history-toggle">조건 보기</span>
                   </div>
                 </summary>
@@ -120,9 +124,6 @@ export default function MyPage({ email, start, logout, edit }) {
           계약 일정표
         </button>
       </div>
-      <button className="quiet logout" onClick={logout}>
-        로그아웃
-      </button>
     </section>
   );
 }
