@@ -39,12 +39,12 @@ export default function App() {
   }
   return (
     <>
-      <Header user={user} logout={logout} path={path} />
+      <Header user={user} path={path} />
       <main className="frame" id="main">
         {path === '/' && <Home start={go} />}
         {path === '/login' && <AccountForm key="login" login={login} />}
         {path === '/signup' && <AccountForm key="signup" signup login={login} />}
-        {path === '/mypage' && user && <MyPage email={user} start={go} />}
+        {path === '/mypage' && user && <MyPage email={user} start={go} logout={logout} />}
         {path === '/diagnosis' && (
           <Diagnosis
             done={(data, request) => {

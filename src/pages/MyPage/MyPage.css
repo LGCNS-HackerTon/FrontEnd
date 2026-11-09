@@ -50,3 +50,8 @@
   background: #eaf8f0;
   color: #195f3b;
 }
+.logout {
+  display: block;
+  margin: 36px auto 0;
+  color: var(--muted);
+}
