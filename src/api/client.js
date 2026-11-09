@@ -2,13 +2,17 @@
 export const useMock = import.meta.env.VITE_USE_MOCK !== 'false';
 export async function request(path, body) {
   const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+  // 서류 첨부(FormData)는 브라우저가 multipart 경계를 직접 붙여요.
   const response = await fetch(
     base + path,
-    body && {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    },
+    body &&
+      (body instanceof FormData
+        ? { method: 'POST', body }
+        : {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          }),
   );
   let data;
   try {

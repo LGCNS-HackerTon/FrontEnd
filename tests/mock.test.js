@@ -44,3 +44,13 @@ test('윤년과 월말의 만기는 마지막 유효 날짜로 보정',()=>{
  assert.equal(mockSchedule({contractDate:'2024-02-01',balanceDate:'2024-02-29'}).expiryDate,'2026-02-28');
  assert.equal(mockSchedule({contractDate:'2026-01-01',balanceDate:'2026-01-31',termMonths:1}).expiryDate,'2026-02-28');
 });
+test('OCR Mock은 10개를 순서대로 주고 판독 못 한 답을 NO로 채우지 않음',async()=>{
+ const {mockOcr}=await import('../src/api/mock/ocr.js');
+ const only=mockOcr({});
+ assert.deepEqual(only.answers.map(a=>a.code),questions.map(q=>q.code));
+ assert.deepEqual(only.answers.filter(a=>a.status==='UNCONFIRMED').map(a=>a.code),['A1_OWNER','B3_JEONSE_RIGHT','R1_VIOLATION']);
+ for(const a of only.answers)assert.equal(a.answer===null,a.status==='UNCONFIRMED');
+ const withLedger=mockOcr({buildingLedger:{}});
+ assert.equal(withLedger.answers.at(-1).status,'CONFIRMED');
+ assert.equal(withLedger.warnings.length,0);
+});
