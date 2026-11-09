@@ -62,10 +62,11 @@ export default function Result({ result, start }) {
           <span className="safe">안전 71~100</span>
         </div>
       </div>
+      {/* 선순위 보증금 같은 계산 안내는 노란 경고 대신 회색 참고 문장으로 보여줘요 (4차 피드백) */}
       {result.warnings.map((w) => (
-        <Notice key={w} kind="warning">
-          <Actions text={w} />
-        </Notice>
+        <p className="result-note" key={w}>
+          ※ <Actions text={w} />
+        </p>
       ))}
       <h2 className="section-heading">점수가 깎인 이유와 확인할 조치</h2>
       <div className="stack">

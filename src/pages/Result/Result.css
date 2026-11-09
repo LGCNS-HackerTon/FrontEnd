@@ -39,16 +39,23 @@
   font-size: 0.82rem;
   margin-top: 6px;
 }
-/* 연보라: 중개사 질문 블록 (2차 피드백, 하늘·파랑·연보라 팔레트) */
 .ask {
   margin: 13px 0;
-  padding: 10px 12px;
-  background: #f1edfd;
-  border-left: 3px solid #5b4bb7;
+  padding-left: 12px;
+  border-left: 3px solid #82a7ff;
 }
 .ask strong {
   font-size: 0.84rem;
-  color: #5b4bb7;
+  color: #224dba;
+}
+.result-note {
+  margin: 13px 0;
+  padding: 13px 15px;
+  background: #f2f5fa;
+  border: 1px solid #dce5f2;
+  border-radius: 10px;
+  color: #3e526d;
+  font-size: 0.93rem;
 }
 .clause {
   padding: 12px;
