@@ -14,7 +14,7 @@ export default function Home({ start }) {
     <>
       <section className="hero">
         <div className="hero-copy">
-          <Label>처음이라면, 첫 전세</Label>
+          <Label>처음 하는 전세 계약이라면</Label>
           <h1>
             도장 찍기 전에,
             <br />

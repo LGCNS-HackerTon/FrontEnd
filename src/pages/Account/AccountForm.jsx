@@ -49,12 +49,12 @@ export default function AccountForm({ login, signup = false }) {
   const fieldError = (name) => (error?.field === name ? error.message : null);
   return (
     <section className="narrow card panel">
-      <Label>첫 전세 계정</Label>
+      <Label>전세역전 계정</Label>
       <h1>{title}</h1>
       <p className="intro">
         {signup
           ? '계정을 만들고 진단 내역을 한곳에서 확인해요.'
-          : '로그인하고 첫 전세 진단을 시작해 보세요.'}
+          : '로그인하고 전세역전 진단을 시작해 보세요.'}
       </p>
       <Notice>
         데모 계정 정보는 이 브라우저에 저장돼요. 실제 서비스에서 쓰는 비밀번호는 입력하지

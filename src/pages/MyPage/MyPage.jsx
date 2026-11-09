@@ -3,7 +3,7 @@ import Label from '../../components/common/Label.jsx';
 import { readHistory } from '../../services/history.js';
 import { readProfile } from '../../services/account.js';
 import './MyPage.css';
-export default function MyPage({ email, start }) {
+export default function MyPage({ email, start, logout }) {
   const profile = readProfile(email),
     history = readHistory(email);
   const dateFormat = new Intl.DateTimeFormat('ko-KR', {
@@ -12,7 +12,7 @@ export default function MyPage({ email, start }) {
   });
   return (
     <section className="content">
-      <Label>첫 전세 계정</Label>
+      <Label>전세역전 계정</Label>
       <h1>마이페이지</h1>
       <p className="intro">내 계정과 최근 진단 기록을 확인해요.</p>
       <article className="card action-card profile">
@@ -52,6 +52,9 @@ export default function MyPage({ email, start }) {
           계약 일정표
         </button>
       </div>
+      <button className="quiet logout" onClick={logout}>
+        로그아웃
+      </button>
     </section>
   );
 }

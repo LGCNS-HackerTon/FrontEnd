@@ -9,7 +9,7 @@ input:focus-visible {
 .eyebrow {
   color: #2453bd;
   font-size: 0.83rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   font-weight: 850;
 }
 .actions {
