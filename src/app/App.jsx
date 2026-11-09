@@ -16,6 +16,12 @@ export default function App() {
   const [path, setPath] = useState(location.pathname);
   const [user, setUser] = useState(() => sessionStorage.getItem('demo-user'));
   const [result, setResult] = useState(null);
+  // 마이페이지에서 고르는 수정할 기록 ({...기록, target: 질문 코드 | 'amounts'})
+  const [editing, setEditing] = useState(null);
+  useEffect(() => {
+    // 수정 중에 진단 화면을 떠나면 수정 모드를 끝내요. 새 진단이 기록을 덮어쓰지 않게 해요.
+    if (path !== '/diagnosis') setEditing(null);
+  }, [path]);
   useEffect(() => {
     const sync = () => setPath(location.pathname);
     window.addEventListener('popstate', sync);
@@ -44,13 +50,25 @@ export default function App() {
         {path === '/' && <Home start={go} />}
         {path === '/login' && <AccountForm key="login" login={login} />}
         {path === '/signup' && <AccountForm key="signup" signup login={login} />}
-        {path === '/mypage' && user && <MyPage email={user} start={go} logout={logout} />}
+        {path === '/mypage' && user && (
+          <MyPage
+            email={user}
+            start={go}
+            logout={logout}
+            edit={(record, target) => {
+              setEditing({ ...record, target });
+              go('/diagnosis');
+            }}
+          />
+        )}
         {path === '/diagnosis' && (
           <Diagnosis
+            key={editing ? editing.id + editing.target : 'new'}
+            edit={editing}
             done={(data, request) => {
               // 비로그인은 저장하지 않아요(null). 로그인했는데 저장 실패면 false.
-              const saved = user ? saveDiagnosis(user, data, request) : null;
-              setResult({ ...data, historySaved: saved });
+              const saved = user ? saveDiagnosis(user, data, request, editing?.id) : null;
+              setResult({ ...data, historySaved: saved, historyUpdated: Boolean(editing) });
               go('/result');
             }}
           />

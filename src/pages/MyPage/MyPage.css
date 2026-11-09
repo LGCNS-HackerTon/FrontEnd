@@ -22,11 +22,24 @@
   margin-top: 13px;
 }
 .history-item {
+  padding: 16px 20px;
+}
+.history-item summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 20px;
+  cursor: pointer;
+  list-style: none;
+}
+.history-item summary::-webkit-details-marker {
+  display: none;
+}
+.history-toggle::after {
+  content: " ▾";
+}
+details[open] .history-toggle::after {
+  content: " ▴";
 }
 .history-item time {
   font-size: 0.85rem;
@@ -54,4 +67,70 @@
   display: block;
   margin: 36px auto 0;
   color: var(--muted);
+}
+.history-toggle {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.history-detail {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.history-detail h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.history-amounts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.history-amounts div {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f2f5fa;
+}
+.history-amounts dt {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.history-amounts dd {
+  margin: 2px 0 0;
+  font-weight: 750;
+}
+.history-answers {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.history-answers li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.history-answers small {
+  display: block;
+}
+@media (max-width: 440px) {
+  .history-answers li {
+    grid-template-columns: 1fr auto;
+  }
+  .history-answers li .quiet {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-left: -12px;
+  }
 }
