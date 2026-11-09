@@ -140,7 +140,7 @@ export default function Diagnosis({ done, edit }) {
       <div className="card panel">
         {editing && (
           <Notice>
-            마이페이지 기록을 수정하고 있어요. 다시 진단하면 이 기록이 새 결과로 바뀌어요.
+            마이페이지 기록을 수정하고 있어요. 다시 검토하면 이 기록이 새 결과로 바뀌어요.
           </Notice>
         )}
         {stage === 'address' && (
@@ -394,7 +394,7 @@ export default function Diagnosis({ done, edit }) {
                   '다시 시도'
                 ) : (
                   <>
-                    {editing ? '다시 진단하기' : '진단 결과 보기'} {arrow}
+                    {editing ? '다시 검토하기' : '진단 결과 보기'} {arrow}
                   </>
                 ),
               )}

@@ -79,7 +79,7 @@ export default function MyPage({ email, start, logout, edit }) {
       </article>
       <h2 className="section-heading">최근 등기부 진단</h2>
       <p className="muted">
-        최근 진단 5건을 처음 진단한 순서로 보여줘요. 조건을 수정해 다시 진단하면 그 기록이 새 결과로
+        최근 진단 5건을 처음 진단한 순서로 보여줘요. 조건을 수정해 다시 검토하면 그 기록이 새 결과로
         바뀌어요. (데모: 이 브라우저에만 저장)
       </p>
       {history.length ? (
