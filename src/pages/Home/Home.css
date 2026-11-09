@@ -1,119 +1,201 @@
-.paper-head span {
+/* 색·둥글기는 DESIGN.md 토큰만 써요. 모션 300ms/420ms는 랜딩용 로컬 확장(LC-29/30)이에요. */
+.landing {
   display: grid;
-  place-items: center;
-  color: white;
-  background: var(--blue);
-  border-radius: 11px;
-  width: 34px;
-  height: 34px;
-  font-size: 1.35rem;
+  gap: clamp(56px, 9vw, 112px);
 }
-.hero {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  align-items: center;
-  gap: 22px;
-  background: linear-gradient(125deg, #edf3ff 35%, #e1ebff);
-  border: 1px solid #d9e6ff;
-  border-radius: 32px;
-  padding: clamp(27px, 5vw, 64px);
-  min-height: 410px;
-}
-.hero h1 {
-  font-size: clamp(2.15rem, 5vw, 4rem);
-  margin: 11px 0 21px;
-}
-.hero em {
-  color: var(--blue);
-  font-style: normal;
-}
-.hero p:not(.eyebrow) {
-  color: var(--muted);
-  font-size: 1.04rem;
-}
-.illustration {
-  height: 290px;
-  position: relative;
-  display: grid;
-  place-items: center;
-  isolation: isolate;
-}
-.orbit {
-  position: absolute;
-  width: 270px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #d1e0ff;
-  box-shadow: 0 0 0 20px #dce8ff;
-  z-index: -1;
-}
-.paper {
-  width: 222px;
-  max-width: 80%;
-  background: white;
-  transform: rotate(-8deg);
-  border-radius: 21px;
-  box-shadow: 0 20px 45px #2458d52d;
-  padding: 20px;
-}
-.paper-head,
-.paper-row {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-.paper-head {
-  margin-bottom: 16px;
-}
-.paper-head b {
-  font-size: 0.88rem;
-}
-.paper-row {
-  font-size: 0.8rem;
-  font-weight: 650;
-  margin: 7px 0;
-  padding: 7px;
-  border-radius: 8px;
-  background: #f0f5ff;
-}
-.paper-row i {
-  font-style: normal;
-  color: var(--blue);
-  font-weight: 900;
-}
-.paper-line {
-  height: 6px;
-  width: 44%;
-  background: #e2ebfa;
-  border-radius: 8px;
-  margin-top: 13px;
-}
-.float-note {
-  position: absolute;
-  bottom: 19px;
-  right: 1%;
-  display: grid;
-  transform: rotate(7deg);
-  background: #173772;
-  color: white;
-  border-radius: 13px;
-  padding: 10px 17px;
-  box-shadow: 0 9px 25px #1737723c;
-}
-.float-note small {
-  color: #d9e5ff;
-}
-.glossary {
-  margin-top: 36px;
-}
-.glossary h2 {
+.landing h2 {
   margin-top: 7px;
 }
+
+/* 1. 히어로: 왼쪽 문구 + 오른쪽 등기부 예시 */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  min-height: min(620px, calc(100vh - 140px));
+  padding: clamp(28px, 5vw, 64px);
+  background: #edf4ff;
+  border: 1px solid #dce5f2;
+  border-radius: 32px;
+}
+.hero h1 {
+  font-size: clamp(2.15rem, 4vw, 3.25rem);
+  margin: 12px 0 20px;
+}
+.hero em {
+  color: #2458d5;
+  font-style: normal;
+}
+.hero-lead {
+  color: #52637b;
+  font-size: 1.08rem;
+  max-width: 34em;
+}
+
+.sheet-stage {
+  display: grid;
+  gap: 12px;
+}
+.sheet {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #dce5f2;
+  border-radius: 18px;
+  box-shadow: 0 3px 13px #28497906;
+}
+.sheet-title {
+  font-weight: 850;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dce5f2;
+}
+.sheet-title small,
+.sheet-name small,
+.sheet-note-title small {
+  color: #52637b;
+  font-weight: 400;
+  font-size: 0.82rem;
+}
+.sheet-part {
+  display: grid;
+  gap: 4px;
+  min-height: 44px;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: #16243b;
+  background: #f2f5fa;
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+.sheet-part:hover {
+  border-color: #cbd8eb;
+}
+.sheet-part.on {
+  background: #eaf2ff;
+  border-color: #4978dc;
+}
+.sheet-name {
+  font-weight: 800;
+}
+.sheet-part.on .sheet-name {
+  color: #2049a8;
+}
+.sheet-row {
+  font-size: 0.88rem;
+  color: #52637b;
+}
+.sheet-note {
+  padding: 14px 16px;
+  background: #eff5ff;
+  border: 1px solid #dce5f2;
+  border-radius: 10px;
+  color: #28446e;
+}
+.sheet-note-title {
+  font-weight: 800;
+}
+.sheet-note ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.93rem;
+}
+
+/* 2. 진행 순서: 번호 필름스트립 */
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+.flow-steps li {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #dce5f2;
+  border-radius: 18px;
+}
+.flow-index {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-weight: 900;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #52637b;
+}
+.flow-steps p {
+  margin-top: 6px;
+  color: #52637b;
+}
+
+/* 3. 결과 미리보기 */
+.preview {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(20px, 4vw, 48px);
+  align-items: center;
+}
+.preview-copy .muted {
+  margin-top: 12px;
+}
+.grade-switch {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.grade-switch button {
+  min-height: 44px;
+}
+.grade-switch .on {
+  background: #eaf2ff;
+  border-color: #4978dc;
+  color: #2049a8;
+}
+.preview-stage {
+  display: grid;
+  gap: 14px;
+}
+.preview-stage .score {
+  margin-top: 0;
+}
+.preview-stage .score h3 {
+  margin-top: 9px;
+}
+.preview-range {
+  font-weight: 900;
+  font-size: 1.3rem;
+  white-space: nowrap;
+}
+.preview-outputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.preview-outputs li {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #dce5f2;
+  border-radius: 10px;
+}
+.preview-outputs span {
+  color: #52637b;
+  font-size: 0.93rem;
+}
+
+/* 4. 용어 */
 .term-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 14px;
   margin-top: 17px;
 }
@@ -121,47 +203,117 @@
   padding: 19px;
 }
 .term-grid p {
-  color: var(--muted);
+  color: #52637b;
   margin-top: 6px;
 }
 .term-index {
   font-size: 0.8rem;
   font-weight: 800;
-  color: var(--blue);
+  color: #52637b;
   display: inline-block;
   margin-bottom: 7px;
 }
+
+/* 5. 신뢰 밴드: 페이지의 단 한 번 반전(LC-27) */
+.trust {
+  padding: clamp(28px, 5vw, 56px);
+  background: #2458d5;
+  color: #ffffff;
+  border-radius: 32px;
+}
+.trust h2 {
+  margin-top: 0;
+  color: #ffffff;
+}
+.trust-points {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding-left: 20px;
+  font-size: 1.04rem;
+}
+.trust-primary {
+  min-height: 46px;
+  padding: 11px 17px;
+  font-weight: 760;
+  color: #2458d5;
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+.trust-primary:hover {
+  background: #edf4ff;
+}
+.trust button:focus-visible,
+.trust a:focus-visible {
+  outline-color: #ffffff;
+}
+.trust-links {
+  margin-top: 18px;
+  font-size: 0.93rem;
+}
+.trust-links a {
+  color: #ffffff;
+}
+
+/* 스크롤 리빌: JS가 붙은 뒤에만 숨겼다가 한 번 보여 줘요 */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 420ms ease-out,
+      transform 420ms ease-out;
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  .reveal-ready .reveal.in {
+    opacity: 1;
+    transform: none;
+  }
+  .sheet-part,
+  .grade-switch button {
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .sheet-note ul,
+  .preview-stage .score {
+    animation: settle 300ms ease-out;
+  }
+}
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (max-width: 960px) {
+  .flow-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 720px) {
+  .hero,
+  .preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .hero {
-    grid-template-columns: 1fr;
-    gap: 3px;
+    min-height: 0;
+    border-radius: 18px;
   }
-  .illustration {
-    height: 215px;
-  }
-  .orbit {
-    width: 183px;
-  }
-  .paper {
-    width: 186px;
-    padding: 13px;
-  }
-  .paper-head {
-    margin-bottom: 8px;
-  }
-  .float-note {
-    right: 9%;
-    bottom: 4px;
+  .preview-outputs {
+    grid-template-columns: minmax(0, 1fr);
   }
   .term-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .desktop {
-    display: none;
+  .trust {
+    border-radius: 18px;
   }
 }
-
-.hero h1 {
-  font-size: clamp(2.15rem, 4vw, 3.25rem);
+@media (max-width: 440px) {
+  .flow-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
-
