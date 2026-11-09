@@ -4,6 +4,7 @@ import { readHistory, formatMoney } from '../../services/history.js';
 // shortcut: 질문 문구는 docs/01과 같은 Mock 목록에서 읽어요. 서버 문구가 달라지면 기록에 문구도 저장하도록 바꿔요.
 import { questions } from '../../api/mock/questions.js';
 import { safeScore } from '../../services/score.js';
+import { readChecklist } from '../../services/checklist.js';
 import { readProfile } from '../../services/account.js';
 import './MyPage.css';
 const answerLabel = { YES: '예', NO: '아니오', UNKNOWN: '모르겠어요' };
@@ -59,7 +60,8 @@ function HistoryDetail({ item, edit }) {
 }
 export default function MyPage({ email, start, logout, edit }) {
   const profile = readProfile(email),
-    history = readHistory(email);
+    history = readHistory(email),
+    checklist = readChecklist(email);
   const dateFormat = new Intl.DateTimeFormat('ko-KR', {
     dateStyle: 'medium',
     timeZone: 'Asia/Seoul',
@@ -116,12 +118,36 @@ export default function MyPage({ email, start, logout, edit }) {
       ) : (
         <p className="notice">아직 진단 내역이 없어요. 첫 등기부 진단을 시작해 보세요.</p>
       )}
+      <h2 className="section-heading">계약 체크리스트</h2>
+      {checklist ? (
+        <article className="card action-card checklist-card">
+          <p className="muted">
+            계약일 {checklist.dates.contractDate} · 잔금일 {checklist.dates.balanceDate}
+          </p>
+          <p>
+            <strong>
+              {checklist.done.length}/{checklist.total}
+            </strong>{' '}
+            완료
+          </p>
+          <progress
+            value={checklist.done.length}
+            max={checklist.total || 1}
+            aria-label="체크리스트 진행률"
+          />
+          <button className="secondary compact" onClick={() => start('/schedule')}>
+            이어서 보기
+          </button>
+        </article>
+      ) : (
+        <p className="notice">아직 만든 체크리스트가 없어요. 계약일과 잔금일로 만들어 보세요.</p>
+      )}
       <div className="actions">
         <button className="primary" onClick={() => start('/diagnosis')}>
           등기부 진단 시작 →
         </button>
         <button className="secondary" onClick={() => start('/schedule')}>
-          계약 일정표
+          계약 체크리스트
         </button>
       </div>
     </section>

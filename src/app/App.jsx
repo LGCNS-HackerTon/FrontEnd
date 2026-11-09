@@ -10,7 +10,7 @@ import Header from '../components/layout/Header.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import { saveDiagnosis } from '../services/history.js';
 const routes = ['/', '/login', '/signup', '/diagnosis', '/result', '/schedule', '/mypage'];
-// 진단·일정표는 누구나 쓰고, 기록을 보는 마이페이지만 로그인이 필요해요.
+// 진단·체크리스트는 누구나 쓰고, 기록을 보는 마이페이지만 로그인이 필요해요.
 const protectedRoutes = ['/mypage'];
 export default function App() {
   const [path, setPath] = useState(location.pathname);
@@ -74,7 +74,7 @@ export default function App() {
           />
         )}
         {path === '/result' && result && <Result result={result} start={go} />}
-        {path === '/schedule' && <Schedule />}
+        {path === '/schedule' && <Schedule key={user || 'guest'} owner={user} />}
       </main>
       <Footer />
     </>

@@ -100,7 +100,7 @@ export default function Result({ result, start }) {
       </Notice>
       <div className="actions">
         <button className="primary" onClick={() => start('/schedule')}>
-          일정표 만들기 →
+          체크리스트 만들기 →
         </button>
         <button className="secondary" onClick={() => start('/diagnosis')}>
           다른 집 다시 진단
