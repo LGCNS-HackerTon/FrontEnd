@@ -5,6 +5,7 @@ import Field from '../../components/common/Field.jsx';
 import ErrorBox from '../../components/common/ErrorBox.jsx';
 import { go } from '../../app/navigation.js';
 import useDiagnosis from './useDiagnosis.js';
+import { questions as mockQuestions } from '../../api/mock/questions.js';
 import './Diagnosis.css';
 const choices = [
   ['YES', '예'],
@@ -12,6 +13,8 @@ const choices = [
   ['UNKNOWN', '모르겠어요'],
 ];
 const answerLabel = Object.fromEntries(choices);
+// shortcut: 질문 API는 위험한 답을 주지 않아서 docs/01과 같은 Mock 표에서 읽어요. API가 주면 그 값으로 바꿔요.
+const riskyAnswer = Object.fromEntries(mockQuestions.map((q) => [q.code, q.risky]));
 const ACCEPT = '.jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf';
 export default function Diagnosis({ done, edit }) {
   const {
@@ -89,12 +92,15 @@ export default function Diagnosis({ done, edit }) {
         label={label}
         type="file"
         accept={ACCEPT}
-        hint={
-          files[name] ? `선택한 파일: ${files[name].name}` : `${hint} 파일을 끌어 놓아도 돼요.`
-        }
+        hint={files[name] ? `선택한 파일: ${files[name].name}` : hint}
         onChange={pickFile}
         error={fieldError(name)}
       />
+      {/* 점선 창 아무 곳이나 눌러도 파일 선택이 열려요. 키보드는 위 파일 입력칸으로 써요 */}
+      <p className="dropzone-cta" aria-hidden="true" onClick={() => document.getElementById(name)?.click()}>
+        <strong>{dragging === name ? '여기에 놓으면 첨부돼요' : '파일을 여기로 끌어 놓으세요'}</strong>
+        <span>또는 눌러서 파일 선택 · JPG·PNG·PDF</span>
+      </p>
     </div>
   );
   const stepActions = (label, onNext) => (
@@ -268,7 +274,13 @@ export default function Diagnosis({ done, edit }) {
                   <small className="muted">{q.sectionName}</small>
                   <p className="evidence-question">{q.text}</p>
                   <p className="evidence-answer">
-                    <span className="badge">{answerLabel[answers[q.code]]}</span>
+                    <span
+                      className={
+                        'badge answer-badge ' + (answers[q.code] === riskyAnswer[q.code] ? 'risky' : 'safe')
+                      }
+                    >
+                      {answerLabel[answers[q.code]]}
+                    </span>
                     <small className="muted">{ocrAnswer(q.code).evidence}</small>
                   </p>
                   <button

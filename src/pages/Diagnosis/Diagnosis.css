@@ -65,28 +65,65 @@ progress {
   gap: 10px;
   margin-top: 16px;
 }
+/* 점선 첨부 창: 끌어 놓으면 첨부된다는 느낌 (3차 피드백) */
 .dropzone {
+  margin: 14px 0;
+  padding: 14px 16px;
+  background: #f7f9fd;
+  border: 2px dashed #4978dc;
   border-radius: 10px;
 }
-.dropzone.dragging {
+.dropzone .field {
+  margin: 0;
+}
+.dropzone-cta {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  margin-top: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  color: #2049a8;
   background: #edf4ff;
-  outline: 2px dashed #4978dc;
-  outline-offset: 4px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.dropzone-cta span {
+  font-size: 0.85rem;
+  color: #52637b;
+}
+.dropzone.dragging {
+  background: #e3efff;
+  border-color: #2458d5;
+}
+.dropzone.dragging .dropzone-cta {
+  background: #ffffff;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .dropzone {
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+}
+/* 서류에서 확인한 답: 안전한 답 초록 · 위험한 답 빨강 (docs/01 위험 기준) */
+.answer-badge.safe {
+  color: #195f3b;
+  background: #eaf8f0;
+  border-color: #bfebd2;
+}
+.answer-badge.risky {
+  color: #8c2821;
+  background: #fff1f0;
+  border-color: #f4c9c4;
 }
 /* 직접 답할 질문은 하늘색 배경 (2차 피드백) */
 .card.pending-item {
   background: #e3efff;
   border-color: #b9d3fb;
 }
-/* 고른 답은 파랑으로 채워요 */
 .choice:has(:checked) {
-  background: #2458d5;
-  border-color: #2458d5;
-  color: #ffffff;
   font-weight: 800;
-}
-.choice:has(:checked) input {
-  accent-color: #ffffff;
 }
 .choice:has(:checked)::after {
   content: '✓' / '';

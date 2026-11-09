@@ -45,11 +45,20 @@ details[open] .history-toggle::after {
   font-size: 0.85rem;
   color: var(--muted);
 }
+/* 등급·점수·조건 보기 칸 너비를 고정해 기록마다 같은 자리에 오게 해요 (3차 피드백) */
 .history-grade {
-  display: flex;
+  display: grid;
+  grid-template-columns: 52px 56px 76px;
   align-items: center;
-  gap: 10px;
+  justify-items: center;
   white-space: nowrap;
+}
+.history-grade strong {
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
+}
+.history-grade .history-toggle {
+  justify-self: end;
 }
 .history-item.danger .badge {
   background: #fff1f0;
@@ -64,9 +73,11 @@ details[open] .history-toggle::after {
   color: #195f3b;
 }
 /* 로그아웃: 프로필 박스 오른쪽 아래 붉은 버튼 (2차 피드백) */
+/* 로그아웃: 프로필 박스 오른쪽 끝, 세로 가운데, 빨간 배경 흰 글씨 */
 .profile .logout {
   margin-left: auto;
-  align-self: flex-end;
+  margin-right: 8px;
+  align-self: center;
   min-height: 44px;
   padding: 9px 16px;
   font-weight: 760;
@@ -96,7 +107,7 @@ details[open] .history-toggle::after {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
 }
 .history-amounts {
   display: grid;
