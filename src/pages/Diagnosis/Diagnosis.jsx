@@ -147,6 +147,12 @@ export default function Diagnosis({ done, edit }) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              // required는 공백만 입력해도 통과시켜서 직접 한 번 더 확인해요.
+              if (!address.trim()) {
+                setError({ field: 'address', message: '계약할 집 주소를 입력해 주세요.' });
+                document.getElementById('address')?.focus();
+                return;
+              }
               show('upload');
             }}
           >
@@ -162,7 +168,11 @@ export default function Diagnosis({ done, edit }) {
               autoComplete="street-address"
               placeholder="예: 서울 마포구 ○○로 12, 101동 1204호"
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={(e) => {
+                setAddress(e.target.value);
+                setError(null);
+              }}
+              error={fieldError('address')}
             />
             {stepActions(<>다음 {arrow}</>)}
           </form>
