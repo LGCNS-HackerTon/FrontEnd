@@ -75,7 +75,7 @@ progress {
 }
 .pending-item {
   background: #eff5ff;
-  border-color: #d4e2fb;
+  border-color: #dce5f2;
 }
 .pending-item .badge {
   color: #2453bd;
