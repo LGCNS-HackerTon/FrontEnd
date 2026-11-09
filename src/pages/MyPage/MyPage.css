@@ -156,3 +156,20 @@ details[open] .history-toggle::after {
     margin-left: -12px;
   }
 }
+
+.checklist-card {
+  display: grid;
+  gap: 8px;
+}
+.checklist-card strong {
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.checklist-card progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--blue);
+}
+.checklist-card .secondary {
+  justify-self: start;
+}

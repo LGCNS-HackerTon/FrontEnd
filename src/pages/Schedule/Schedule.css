@@ -33,7 +33,7 @@
 .task {
   padding: 16px;
   display: grid;
-  grid-template-columns: 105px 1fr;
+  grid-template-columns: 105px 1fr auto;
   gap: 12px;
 }
 .task-date strong,
@@ -62,9 +62,55 @@
   .task {
     grid-template-columns: 86px 1fr;
   }
+  .task-check {
+    grid-column: 2;
+    justify-self: start;
+  }
 }
 
 .dates ~ .primary {
   margin-top: 12px;
 }
 
+
+/* 체크리스트: 완료 체크와 진행률 */
+.task-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: start;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #cbd8ea;
+  border-radius: 10px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.task-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
+.task-check:has(:checked) {
+  background: #eaf2ff;
+  border-color: #4978dc;
+  color: #2049a8;
+}
+.task.done h3 {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.checklist-progress {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.checklist-progress strong {
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.checklist-progress progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--blue);
+}

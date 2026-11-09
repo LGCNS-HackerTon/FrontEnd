@@ -20,7 +20,7 @@ export default function Header({ user, path }) {
         </a>
         <nav aria-label="주 메뉴">
           <button className="quiet" onClick={() => go('/schedule')}>
-            계약 일정표
+            계약 체크리스트
           </button>
           {/* 로그아웃은 마이페이지 맨 아래에 있어요 */}
           {user ? (
