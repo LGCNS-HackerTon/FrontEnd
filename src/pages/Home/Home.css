@@ -137,7 +137,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(20px, 4vw, 48px);
-  align-items: center;
+  align-items: start;
 }
 .preview-copy .muted {
   margin-top: 12px;
@@ -315,5 +315,177 @@
 @media (max-width: 440px) {
   .flow-steps {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 시안(로컬 전용): 등기부 목업 + 점수표 목업 겹쳐 보기 */
+.mock-wrap {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.mock-stage {
+  position: relative;
+  padding: 0 0 92px;
+}
+.mock-registry {
+  display: grid;
+  gap: 6px;
+  width: 92%;
+  padding: 18px 18px 14px;
+  background: #ffffff;
+  border: 1px solid #dce5f2;
+  border-radius: 10px;
+  box-shadow: 0 3px 13px #28497906;
+  transform: rotate(-1.5deg);
+  font-size: 0.72rem;
+  color: #16243b;
+}
+.reg-doc {
+  text-align: center;
+  font-weight: 850;
+  font-size: 0.86rem;
+}
+.reg-addr {
+  padding-bottom: 6px;
+  border-bottom: 2px solid #16243b;
+  font-weight: 700;
+}
+.reg-part {
+  display: grid;
+  gap: 3px;
+  padding: 6px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+.reg-part:hover {
+  border-color: #cbd8eb;
+}
+.reg-part.on {
+  background: #eaf2ff;
+  border-color: #4978dc;
+}
+.reg-head {
+  font-weight: 800;
+  text-align: center;
+}
+.reg-table {
+  display: grid;
+  grid-template-columns: 0.7fr 1fr 1fr 1.6fr;
+  border-top: 1px solid #aebed4;
+  border-left: 1px solid #aebed4;
+}
+.reg-table span {
+  padding: 3px 4px;
+  border-right: 1px solid #aebed4;
+  border-bottom: 1px solid #aebed4;
+  overflow-wrap: anywhere;
+}
+.reg-table span:nth-child(-n + 4) {
+  background: #f2f5fa;
+  font-weight: 700;
+  text-align: center;
+}
+/* 말소된 기록(빨간 줄) 예시 */
+.reg-struck {
+  color: #52637b;
+  text-decoration: line-through;
+  text-decoration-color: #d64545;
+  text-decoration-thickness: 2px;
+}
+.mock-score {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 60%;
+  min-width: 230px;
+  padding: 14px 16px;
+  background: #fff1f0;
+  border: 1px solid #f4c9c4;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px #2458d52d;
+  transform: rotate(2deg);
+  color: #8c2821;
+}
+.mock-score-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mock-score-top p {
+  text-align: right;
+}
+.mock-score-top strong {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.mock-score-top small {
+  display: block;
+  font-size: 0.72rem;
+}
+.mock-gauge {
+  position: relative;
+  height: 10px;
+  margin: 20px 0 10px;
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    #d64545 0%,
+    #d64545 32%,
+    #f0b429 46%,
+    #f0b429 62%,
+    #2f9e62 78%,
+    #2f9e62 100%
+  );
+}
+.mock-pin {
+  position: absolute;
+  bottom: 14px;
+  transform: translateX(-50%);
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: #16243b;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+.mock-score ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+}
+.mock-score li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #16243b;
+}
+.mock-score li b {
+  color: #8c2821;
+  font-variant-numeric: tabular-nums;
+}
+.mock-note ul {
+  font-size: 0.88rem;
+}
+@media (max-width: 720px) {
+  .mock-registry {
+    width: 100%;
+    transform: none;
+  }
+  .mock-stage {
+    padding-bottom: 150px;
+  }
+  .mock-score {
+    width: 86%;
+    transform: rotate(1deg);
   }
 }

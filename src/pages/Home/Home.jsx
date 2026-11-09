@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Label from '../../components/common/Label.jsx';
+import ScoreGuide from '../../components/common/ScoreGuide.jsx';
 import { questions } from '../../api/mock/questions.js';
 import './Home.css';
 
@@ -24,6 +25,18 @@ const sheet = [
     rows: ['근저당권설정 · 채권최고액', '전세권·임차권 기록 확인'],
   },
 ];
+// 랜딩에서는 질문(docs/01)을 "~ 여부" 점검 항목으로 짧게 보여줘요. 진단 화면의 질문 문구는 그대로예요.
+const checkItems = {
+  T1_ADDRESS: '주소(동·호수까지)와 계약할 집 주소 일치 여부',
+  T2_USAGE: '건물 용도가 주택(아파트 · 다세대 · 연립 · 다가구 · 단독)인지 여부',
+  A1_OWNER: '소유자와 계약하러 나온 집주인 동일 여부',
+  A2_RECENT_OWNER: '최근 3개월 안 소유권 변경 여부',
+  A3_TRUST: '신탁 등기 여부',
+  A4_SEIZURE: '압류 · 가압류 · 가처분 · 가등기 · 경매 기록 여부',
+  B1_MORTGAGE: '근저당권 설정 여부와 채권최고액',
+  B2_LEASE_REG: '주택임차권(임차권등기) 여부',
+  B3_JEONSE_RIGHT: '다른 사람 이름의 전세권 여부',
+};
 const steps = [
   ['계약할 집 주소', '동·호수까지 적어요.'],
   ['서류 올리기', '등기부등본은 꼭, 건축물대장은 있으면 올려요.'],
@@ -100,42 +113,116 @@ export default function Home({ start }) {
           </div>
         </div>
 
-        <div className="sheet-stage">
-          <div className="sheet" aria-label="등기부등본 예시">
-            <p className="sheet-title">
-              등기부등본 <small>(예시)</small>
-            </p>
-            {sheet.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={'sheet-part' + (item.id === part ? ' on' : '')}
-                aria-pressed={item.id === part}
-                onClick={() => setPart(item.id)}
-              >
-                <span className="sheet-name">
-                  {item.name} <small>{item.plain}</small>
-                </span>
-                {item.rows.map((row) => (
-                  <span className="sheet-row" key={row}>
-                    {row}
-                  </span>
-                ))}
-              </button>
-            ))}
+        {/* 시안(로컬): 실제 등기부처럼 생긴 예시 위에 최종 점수표 예시를 겹쳐 보여줘요. 값은 데모 케이스 B */}
+        <div className="mock-wrap">
+        <div className="mock-stage">
+          <div className="mock-registry" aria-label="등기사항전부증명서 예시">
+            <p className="reg-doc">등기사항전부증명서(현재 유효사항) - 집합건물</p>
+            <p className="reg-addr">[집합건물] 서울특별시 ○○구 ○○로 12 제101동 제1204호</p>
+            <button
+              type="button"
+              className={'reg-part' + (part === 'TITLE' ? ' on' : '')}
+              aria-pressed={part === 'TITLE'}
+              onClick={() => setPart('TITLE')}
+            >
+              <span className="reg-head">【 표 제 부 】 ( 전유부분의 건물의 표시 )</span>
+              <span className="reg-table">
+                <span>표시번호</span>
+                <span>접수</span>
+                <span>건물번호</span>
+                <span>건물내역</span>
+                <span>1</span>
+                <span>2019년3월4일</span>
+                <span>제12층 제1204호</span>
+                <span>철근콘크리트구조 84.9㎡</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              className={'reg-part' + (part === 'GAPGU' ? ' on' : '')}
+              aria-pressed={part === 'GAPGU'}
+              onClick={() => setPart('GAPGU')}
+            >
+              <span className="reg-head">【 갑 구 】 ( 소유권에 관한 사항 )</span>
+              <span className="reg-table">
+                <span>순위번호</span>
+                <span>등기목적</span>
+                <span>접수</span>
+                <span>권리자 및 기타사항</span>
+                <span>1</span>
+                <span>소유권보존</span>
+                <span>2019년3월4일</span>
+                <span>소유자 김○○</span>
+                <span>2</span>
+                <span>소유권이전</span>
+                <span>2026년9월1일</span>
+                <span>소유자 홍○○</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              className={'reg-part' + (part === 'EULGU' ? ' on' : '')}
+              aria-pressed={part === 'EULGU'}
+              onClick={() => setPart('EULGU')}
+            >
+              <span className="reg-head">【 을 구 】 ( 소유권 이외의 권리에 관한 사항 )</span>
+              <span className="reg-table">
+                <span>순위번호</span>
+                <span>등기목적</span>
+                <span>접수</span>
+                <span>권리자 및 기타사항</span>
+                <span className="reg-struck">1</span>
+                <span className="reg-struck">근저당권설정</span>
+                <span className="reg-struck">2020년5월7일</span>
+                <span className="reg-struck">채권최고액 금24,000,000원</span>
+                <span>2</span>
+                <span>근저당권설정</span>
+                <span>2026년9월1일</span>
+                <span>채권최고액 금36,000,000원</span>
+              </span>
+            </button>
           </div>
-          <div className="sheet-note" aria-live="polite">
-            <p className="sheet-note-title">
-              {active.name}에서 확인해요 <small>칸을 눌러 보세요</small>
-            </p>
-            <ul key={part}>
-              {questions
-                .filter((q) => q.section === part)
-                .map((q) => (
-                  <li key={q.code}>{q.text}</li>
-                ))}
+
+          <div className="mock-score danger" aria-label="진단 결과 예시">
+            <div className="mock-score-top">
+              <span className="badge">위험</span>
+              <p>
+                <strong>30</strong>점 <small>100점에서 70점 깎였어요</small>
+              </p>
+            </div>
+            <div className="mock-gauge" aria-hidden="true">
+              <span className="mock-pin" style={{ left: '30%' }}>
+                30
+              </span>
+            </div>
+            <ul>
+              <li>
+                <span>부채비율 98.6%</span>
+                <b>−40</b>
+              </li>
+              <li>
+                <span>주택이 아닌 용도</span>
+                <b>−20</b>
+              </li>
+              <li>
+                <span>최근 3개월 안에 집주인 변경</span>
+                <b>−10</b>
+              </li>
             </ul>
           </div>
+        </div>
+        <div className="sheet-note mock-note" aria-live="polite">
+          <p className="sheet-note-title">
+            {active.name}에서 확인하는 사항 <small>등기부 칸을 눌러 보세요</small>
+          </p>
+          <ul key={part}>
+            {questions
+              .filter((q) => q.section === part)
+              .map((q) => (
+                <li key={q.code}>{checkItems[q.code] ?? q.text}</li>
+              ))}
+          </ul>
+        </div>
         </div>
       </section>
 
@@ -183,6 +270,7 @@ export default function Home({ start }) {
             </div>
             <p className="preview-range">{shownGrade[2]}</p>
           </div>
+          <ScoreGuide />
           <ul className="preview-outputs">
             {outputs.map(([title, body]) => (
               <li key={title}>

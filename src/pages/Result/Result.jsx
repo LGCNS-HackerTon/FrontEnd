@@ -2,6 +2,7 @@ import React from 'react';
 import Label from '../../components/common/Label.jsx';
 import Notice from '../../components/common/Notice.jsx';
 import Clause from './Clause.jsx';
+import ScoreGuide from '../../components/common/ScoreGuide.jsx';
 import { safeScore, splitActions } from '../../services/score.js';
 import './Result.css';
 
@@ -62,6 +63,7 @@ export default function Result({ result, start }) {
           <span className="safe">안전 71~100</span>
         </div>
       </div>
+      <ScoreGuide />
       {/* 선순위 보증금 같은 계산 안내는 노란 경고 대신 회색 참고 문장으로 보여줘요 (4차 피드백) */}
       {result.warnings.map((w) => (
         <p className="result-note" key={w}>

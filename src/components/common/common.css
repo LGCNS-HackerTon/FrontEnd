@@ -189,3 +189,78 @@ input[aria-invalid='true'] {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+/* 점수 기준 펼침 (결과·랜딩 공통) */
+.score-guide {
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #dce5f2;
+  border-radius: 10px;
+}
+.score-guide summary {
+  min-height: 24px;
+  font-weight: 800;
+  color: #2049a8;
+  cursor: pointer;
+}
+.score-guide[open] summary {
+  margin-bottom: 8px;
+}
+.score-guide h4 {
+  margin: 14px 0 6px;
+  font-size: 0.92rem;
+}
+.score-guide-lead {
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+.score-guide ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.score-guide .score-guide-grades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.score-guide-grades li {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: 1px solid currentColor;
+}
+.score-guide-grades .safe {
+  color: #195f3b;
+  background: #eaf8f0;
+}
+.score-guide-grades .caution {
+  color: #765019;
+  background: #fff6e4;
+}
+.score-guide-grades .danger {
+  color: #8c2821;
+  background: #fff1f0;
+}
+.score-guide-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #dce5f2;
+  font-size: 0.92rem;
+}
+.score-guide-list b {
+  flex: none;
+  color: #8c2821;
+  font-variant-numeric: tabular-nums;
+}
+.score-guide .score-guide-notes {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  color: #3e526d;
+  font-size: 0.88rem;
+}
