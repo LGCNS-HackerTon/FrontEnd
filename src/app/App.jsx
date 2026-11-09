@@ -9,6 +9,7 @@ import AccountForm from '../pages/Account/AccountForm.jsx';
 import Header from '../components/layout/Header.jsx';
 import Footer from '../components/layout/Footer.jsx';
 import { saveDiagnosis } from '../services/history.js';
+import { clearToken, UNAUTHORIZED_EVENT } from '../api/client.js';
 const routes = ['/', '/login', '/signup', '/diagnosis', '/result', '/schedule', '/mypage'];
 // 진단·체크리스트는 누구나 쓰고, 기록을 보는 마이페이지만 로그인이 필요해요.
 const protectedRoutes = ['/mypage'];
@@ -28,6 +29,16 @@ export default function App() {
     return () => window.removeEventListener('popstate', sync);
   }, []);
   useEffect(() => {
+    // 서버가 보낸 토큰을 거절하면(401) 로그아웃하고 로그인 화면으로 보내요 (docs/03 6.1).
+    const expire = () => {
+      sessionStorage.removeItem('demo-user');
+      setUser(null);
+      go('/login', { next: location.pathname }, true);
+    };
+    window.addEventListener(UNAUTHORIZED_EVENT, expire);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, expire);
+  }, []);
+  useEffect(() => {
     if (!routes.includes(path) || (path === '/result' && !result)) go('/', null, true);
     else if (protectedRoutes.includes(path) && !user) go('/login', { next: path }, true);
   }, [path, user, result]);
@@ -39,6 +50,7 @@ export default function App() {
   }
   function logout() {
     sessionStorage.removeItem('demo-user');
+    clearToken();
     setUser(null);
     setResult(null);
     go('/', null, true);

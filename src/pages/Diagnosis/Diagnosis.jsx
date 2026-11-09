@@ -199,8 +199,8 @@ export default function Diagnosis({ done, edit }) {
               )}
               {file(
                 'buildingLedger',
-                '건축물대장 (선택)',
-                '없으면 위반건축물 여부만 직접 답하면 돼요.',
+                '건축물대장 (필수)',
+                '계약할 호수가 나오는 것. JPG·PNG·PDF, 10MB 이하. 정부24에서 무료로 발급받을 수 있어요.',
               )}
               <div className="links">
                 <a href="https://www.iros.go.kr" target="_blank" rel="noreferrer">

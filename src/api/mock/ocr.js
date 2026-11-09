@@ -9,20 +9,15 @@ const caseB = [
   ['B1_MORTGAGE', 'YES', '을구 1번 근저당권설정 채권최고액 금36,000,000원'],
   ['B2_LEASE_REG', 'NO', '을구에 유효한 주택임차권 기록 없음'],
   ['B3_JEONSE_RIGHT', null, '을구 2번 일부를 읽지 못함'],
-  ['R1_VIOLATION', null, null],
+  ['R1_VIOLATION', 'NO', '건축물대장에 위반건축물 표시 없음'],
 ];
-export function mockOcr({ buildingLedger }) {
-  const answers = caseB.map(([code, answer, evidence]) =>
-    code === 'R1_VIOLATION' && buildingLedger
-      ? { code, status: 'CONFIRMED', answer: 'NO', evidence: '건축물대장에 위반건축물 표시 없음' }
-      : { code, status: answer ? 'CONFIRMED' : 'UNCONFIRMED', answer, evidence },
-  );
-  return {
-    addressMatch: 'MATCH',
-    answers,
-    mortgageMax: 3600,
-    warnings: buildingLedger
-      ? []
-      : ['건축물대장을 첨부하지 않아 위반건축물 여부는 직접 답해 주세요.'],
-  };
+// 건축물대장은 필수라(D11) 위반건축물도 서류로 확인해요.
+export function mockOcr() {
+  const answers = caseB.map(([code, answer, evidence]) => ({
+    code,
+    status: answer ? 'CONFIRMED' : 'UNCONFIRMED',
+    answer,
+    evidence,
+  }));
+  return { addressMatch: 'MATCH', answers, mortgageMax: 3600, warnings: [] };
 }
