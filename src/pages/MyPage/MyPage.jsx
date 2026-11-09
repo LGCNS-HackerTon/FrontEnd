@@ -14,7 +14,7 @@ export default function MyPage({ email, start }) {
     <section className="content">
       <Label>첫 전세 계정</Label>
       <h1>마이페이지</h1>
-      <p className="intro">내 계정과 최근에 진단한 집을 확인해요.</p>
+      <p className="intro">내 계정과 최근 진단 기록을 확인해요.</p>
       <article className="card action-card profile">
         <span className="profile-initial" aria-hidden="true">
           {[...profile.name][0]}

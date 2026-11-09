@@ -1,4 +1,12 @@
-import { formatUnit } from '../utils/formatUnit.js';
+// 만원 단위 정수를 "2억 4,000만 원"처럼 읽기 쉽게 바꿔요.
+export function formatMoney(man) {
+  const eok = Math.floor(man / 10000),
+    rest = man % 10000;
+  const parts = [];
+  if (eok) parts.push(eok + '억');
+  if (rest || !eok) parts.push(rest.toLocaleString('ko-KR') + '만');
+  return parts.join(' ') + ' 원';
+}
 const historyKey = (email) => 'first-jeonse:history:' + email;
 // 계정별로 최근 10개 결과의 요약만 저장해요.
 export function readHistory(email) {
@@ -21,10 +29,10 @@ export function readHistory(email) {
   }
 }
 
-export function saveDiagnosis(email, result, address) {
+export function saveDiagnosis(email, result, request) {
   const item = {
     id: crypto.randomUUID(),
-    location: formatUnit(address),
+    location: `보증금 ${formatMoney(request.deposit)} · 시세 ${formatMoney(request.salePrice)}`,
     date: new Date().toISOString(),
     grade: result.grade,
     gradeLabel: result.gradeLabel,
