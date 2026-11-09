@@ -22,19 +22,32 @@
 | AI | 내일 BE2가 연동 (오늘은 템플릿). API 키는 `.env`에만, 절대 커밋 금지 |
 
 ### 백엔드 패키지 구조
-기능별로 나눠서 BE 3명이 같은 파일을 덜 건드리게 한다. 기본 패키지 `com.lgcns.jeonse`.
+기능별로 나눠서 BE 3명이 같은 파일을 덜 건드리게 한다. 기본 패키지 `com.lgcns.jeonse`. 기능은 `domain/<기능>`, 공통은 `global`에 둔다.
 
 | 패키지 | 담당 | 내용 |
 |---|---|---|
-| `common` | BE3 | 에러 응답 형식, 예외 처리, CORS 설정 |
-| `question` | BE3 | `GET /api/questions`, `registry_questions` 엔티티 |
-| `schedule` | BE3 | `GET /api/schedule`, `checklist_items` 엔티티 |
-| `diagnosis` | BE1 | `POST /api/diagnoses`, 점수 계산, `diagnoses`·`diagnosis_answers` 엔티티 |
-| `diagnosis.advice` | BE2 | 결과 문구(factors, commonAdvice, 템플릿 설명) |
-| `ocr` | BE2 | `POST /api/ocr/registry`, OCR 엔진 연동. **서류는 저장하지 않는다** |
-| `auth`, `member` | 담당 결정 필요 | 선택 로그인·회원가입, 회원별 진단 기록 조회·수정 권한 |
+| `global.apiPayload` | BE3 | 에러 응답 형식 `ApiError` |
+| `global.exception` | BE3 | 예외 클래스, `ExceptionAdvice`(공통 예외 처리) |
+| `global.config` | BE3 | CORS 등 설정 |
+| `global.security` | BE3 문한일 | JWT 발급·검증 (회원 API용) |
+| `domain.question` | BE3 | `GET /api/questions`, `registry_questions` 엔티티 |
+| `domain.schedule` | BE3 | `GET /api/schedule`, `checklist_items` 엔티티 |
+| `domain.diagnosis` | BE1 | `POST /api/diagnoses`, 점수 계산, `diagnoses`·`diagnosis_answers` 엔티티 |
+| `domain.diagnosis.advice` | BE2 | 결과 문구(factors, commonAdvice, 템플릿 설명) |
+| `domain.ocr` | BE2 | `POST /api/ocr/registry`, OCR 엔진 연동. **서류는 저장하지 않는다** |
+| `domain.member` | BE3 문한일 (회원가입·로그인·내 정보) · BE1 송석주 (진단 저장·기록·재평가) | 선택 로그인·회원가입, 회원별 진단 기록 조회·수정 권한 |
 
-각 패키지 안은 `Controller` / `Service` / `Repository` / 엔티티 / `dto`로 나눈다.
+각 `domain/<기능>` 안은 역할별 하위 패키지로 나누고 섞지 않는다.
+
+| 하위 패키지 | 넣는 것 | 예 |
+|---|---|---|
+| `controller` | `@RestController` | `QuestionController` |
+| `service` | 비즈니스 로직 | `QuestionService` |
+| `repository` | `JpaRepository` | `RegistryQuestionRepository` |
+| `entity` | `@Entity` | `RegistryQuestion` |
+| `dto` | 요청·응답 형식. 파일 이름은 `~RequestDTO`, `~ResponseDTO` | `QuestionResponseDTO` |
+| `converter` | 엔티티 ↔ DTO 변환 (필요할 때만) | `QuestionConverter` |
+| `init` | 기본 데이터 넣기 (H2 로컬용) | `QuestionDataInitializer` |
 
 ### 프론트 폴더 구조
 
@@ -65,7 +78,7 @@
 | 문서 | 내용 | 주로 보는 사람 |
 |---|---|---|
 | [docs/01-registry-questions.md](01-registry-questions.md) | 등기부 질문 10개, 점수 규칙, 등급, 행동 안내 템플릿, 데모 케이스 | 전원 |
-| [docs/02-schedule-rules.md](02-schedule-rules.md) | 계약 일정표 D-day 규칙 14개 | BE, FE, DB |
+| [docs/02-schedule-rules.md](02-schedule-rules.md) | 계약 일정표 D-day 규칙 16개 | BE, FE, DB |
 | [docs/03-api-contract.md](03-api-contract.md) | **API 명세서**: 공통 규칙, API 목록, 요청·응답 필드, 에러 (FE와 BE의 약속) | BE, FE, QA |
 | [docs/04-db-schema.md](04-db-schema.md) | 테이블 5개, DDL 초안 | DB, BE |
 | [docs/06-service-flow.md](06-service-flow.md) | **화면 흐름, 화면 경로**, 화면별 내용, 시스템·에러 흐름 | FE, BE, QA |
@@ -77,7 +90,7 @@
 
 ## 4. AI에게 일 시킬 때 지켜야 할 규칙
 
-1. **문서에 없는 기능을 만들지 않는다.** 서류 OCR과 미확인 항목 보완은 진단 흐름에 포함한다 (docs/06 S2, docs/03 5번, docs/09). OCR은 답을 채워주는 도우미일 뿐이고 **판독 못 한 것은 `NO`로 처리하지 않고 사용자에게 묻는다.** 실거래가 API 자동 조회, 블랙리스트(악성 임대인) 조회는 **이번 범위 밖**. 로그인은 **선택 기능**: 비로그인도 진단·일정표를 전부 쓰고, 로그인하면 진단 기록을 마이페이지에 저장한다 (docs/06 S5)
+1. **문서에 없는 기능을 만들지 않는다.** 서류 OCR과 미확인 항목 보완은 진단 흐름에 포함한다. **받는 서류는 등기부등본 + 건축물대장 2개뿐** (D11) (docs/06 S2, docs/03 5번, docs/09). OCR은 답을 채워주는 도우미일 뿐이고 **판독 못 한 것은 `NO`로 처리하지 않고 사용자에게 묻는다.** 실거래가 API 자동 조회, 블랙리스트(악성 임대인) 조회는 **이번 범위 밖**. 로그인은 **선택 기능**: 비로그인도 진단·일정표를 전부 쓰고, 로그인하면 진단 기록을 마이페이지에 저장한다 (docs/06 S5)
 2. **위험 점수는 규칙 기반으로만 계산한다.** AI에게 점수나 등급을 판단시키지 않는다. AI는 설명·질문·특약 문구를 **다듬는 역할만**
 3. **AI 호출이 실패해도 서비스는 동작해야 한다.** 실패하면 docs/01의 템플릿 문장을 그대로 쓴다 (`aiUsed: false`)
 4. **API 모양(필드 이름, 타입, 단위)을 마음대로 바꾸지 않는다.** 바꿔야 하면 팀에 먼저 말하고 docs/03을 먼저 고친 뒤 코드를 고친다
@@ -108,7 +121,8 @@
 | 시세 | 🟡 사용자가 직접 입력 |
 | 선택 로그인·마이페이지 진단 기록 | 🟡 실제 구현 예정 (회원별 서버 저장·수정·재평가) |
 | 서류 OCR 및 보완 질문 | 🟡 진행 중 (D3-3, D6): 오늘 FE Mock, 실제 연동은 내일 12시 전 |
-| 실거래가 API | ❌ 보류 (시간) |
+| 공공 API (실거래가 3종, 도로명주소, 건축물대장) | ❌ 제거 (D11). 시세는 직접 입력 + 실거래가 공개시스템 링크 |
+| 진단 공유 링크 `GET /api/diagnoses/{id}` | ❌ 제거 (D11) |
 | 블랙리스트 조회 | ❌ 제외 (D7) |
 
 ## 7. 저장소 구조
