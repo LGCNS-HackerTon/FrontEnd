@@ -85,6 +85,12 @@ export default function MyPage({ email, start, logout, edit }) {
         <Label>전세역전 계정</Label>
         <h1>마이페이지</h1>
         {error ? <ErrorBox error={error} /> : <p className="muted">불러오는 중…</p>}
+        {/* 내 정보를 못 읽어도 로그아웃은 할 수 있게 해요 */}
+        {error && (
+          <button className="logout" onClick={logout}>
+            로그아웃
+          </button>
+        )}
       </section>
     );
   const dateFormat = new Intl.DateTimeFormat('ko-KR', {
