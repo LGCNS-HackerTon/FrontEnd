@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: ko-KR
+tone_instructions: "해커톤 팀원(입문 개발자)에게 말하듯 짧고 쉬운 한국어로, 고쳐야 하는 이유를 한 줄로 설명해줘."
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  enable_prompt_for_ai_agents: false
+  poem: false
+  in_progress_fortune: false
+  sequence_diagrams: false
+  estimate_code_review_effort: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  review_status: true
+  fail_commit_status: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches: [main]
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+    simplify:
+      enabled: false
+    autofix:
+      enabled: false
+    fix_ci:
+      enabled: false
+    resolve_merge_conflict:
+      enabled: false
+  path_filters:
+    - "!**/dist/**"
+    - "!**/node_modules/**"
+    - "!package-lock.json"
+  path_instructions:
+    - path: "src/**"
+      instructions: |
+        - API 요청·응답 필드 이름과 단위(금액은 만원 단위 정수)가 docs/03-api-contract.md와 같은지 확인해줘.
+        - 화면 순서와 블록은 docs/06-service-flow.md와 같은지 확인해줘.
+        - 사용자에게 보이는 문구는 쉬운 해요체 한국어여야 하고, 결과 화면에는 면책 문구가 항상 있어야 해.
+        - 버튼과 입력칸에 라벨이 있는지(접근성) 봐줘.
+        - 해커톤 프로토타입이라 과한 추상화, 상태관리 라이브러리 추가, 범위 밖 기능(로그인 등)은 제안하지 마.
+    - path: "docs/**"
+      instructions: "문서끼리(01~07) 코드 이름, 필드 이름, 점수가 서로 어긋나지 않는지만 확인해줘."
+chat:
+  auto_reply: true
