@@ -4,7 +4,7 @@ import Notice from '../../components/common/Notice.jsx';
 import Field from '../../components/common/Field.jsx';
 import ErrorBox from '../../components/common/ErrorBox.jsx';
 import { go } from '../../app/navigation.js';
-import useDiagnosis, { PREPARATION_STEP, ADDRESS_STEP } from './useDiagnosis.js';
+import useDiagnosis, { PREPARATION_STEP } from './useDiagnosis.js';
 import './Diagnosis.css';
 const choices = [
   ['YES', '예'],
@@ -17,9 +17,6 @@ export default function Diagnosis({ done }) {
     questions,
     answers,
     setAnswers,
-    address,
-    setAddress,
-    addressForm,
     amounts,
     busy,
     error,
@@ -85,50 +82,11 @@ export default function Diagnosis({ done }) {
                 정부24에서 건축물대장 확인 ↗
               </a>
             </div>
-            <button className="primary full" onClick={() => move(ADDRESS_STEP)}>
-              준비됐어요
+            <ErrorBox error={error} />
+            <button className="primary full" disabled={busy} onClick={begin}>
+              {busy ? '질문을 불러오는 중…' : error ? '다시 시도' : '준비됐어요'}
             </button>
           </>
-        )}
-        {addressForm && (
-          <form onSubmit={begin}>
-            <fieldset disabled={busy}>
-              <Label>등기부 진단 · 집 정보</Label>
-              {heading('동·호수를 입력해 주세요')}
-              <p className="intro">계약할 집의 동·호수를 등기부등본에서 확인해 주세요.</p>
-              <div className="address-fields">
-                {[
-                  ['building', '동 (선택)', '예: 101'],
-                  ['unit', '호수', '예: 1204'],
-                ].map(([name, label, placeholder]) => (
-                  <Field
-                    key={name}
-                    label={label}
-                    name={name}
-                    type="text"
-                    placeholder={placeholder}
-                    maxLength={20}
-                    required={name === 'unit'}
-                    hint={name === 'building' ? '동이 없으면 비워도 돼요.' : undefined}
-                    value={address[name]}
-                    error={error?.field === name ? error.message : null}
-                    onChange={(e) => {
-                      setAddress({ ...address, [name]: e.target.value });
-                      setError(null);
-                    }}
-                  />
-                ))}
-              </div>
-              {error?.field !== 'unit' && <ErrorBox error={error} />}
-              <button className="primary full" disabled={busy}>
-                {busy
-                  ? '질문을 불러오는 중…'
-                  : error && !error.field
-                    ? '다시 시도'
-                    : '질문 시작하기 →'}
-              </button>
-            </fieldset>
-          </form>
         )}
         {question && (
           <form

@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getQuestions, diagnose } from '../../api/diagnosis.js';
-export const PREPARATION_STEP = -2;
-export const ADDRESS_STEP = -1;
+export const PREPARATION_STEP = -1;
 
 // 진단 입력 상태를 화면과 분리해 이전 단계로 돌아가도 값을 유지해요.
 export default function useDiagnosis(done) {
-  // 준비 → 집 정보 → 질문 인덱스 → 금액 입력 순서예요.
+  // 준비 → 질문 인덱스 → 금액 입력 순서예요.
   const [step, setStep] = useState(PREPARATION_STEP),
     [questions, setQuestions] = useState([]),
     [answers, setAnswers] = useState({});
-  const [address, setAddress] = useState({ building: '', unit: '' });
-  const addressForm = step === ADDRESS_STEP;
   const [amounts, setAmounts] = useState({
     deposit: '',
     salePrice: '',
@@ -33,20 +30,7 @@ export default function useDiagnosis(done) {
   useEffect(() => {
     document.getElementById('diagnosis-heading')?.focus({ preventScroll: true });
   }, [step]);
-  async function begin(e) {
-    e.preventDefault();
-    const building = address.building.trim(),
-      unit = address.unit.trim();
-    if (!unit || unit === '호') {
-      setError({
-        code: 'INVALID_INPUT',
-        field: 'unit',
-        message: '호수를 입력해 주세요.',
-      });
-      document.getElementById('unit')?.focus();
-      return;
-    }
-    setAddress({ building: building === '동' ? '' : building, unit });
+  async function begin() {
     if (questions.length) {
       move(0);
       return;
@@ -74,7 +58,6 @@ export default function useDiagnosis(done) {
     setBusy(true);
     setError(null);
     try {
-      // 동·호수는 로컬 기록에만 사용해 기존 API 요청 계약을 유지해요.
       done(
         await diagnose({
           deposit: Number(amounts.deposit),
@@ -85,7 +68,6 @@ export default function useDiagnosis(done) {
             amounts.seniorDeposit === '' ? null : Number(amounts.seniorDeposit),
           answers: questions.map(({ code }) => ({ code, answer: answers[code] })),
         }),
-        address,
       );
     } catch (error) {
       if (error.code === 'INVALID_INPUT' && error.field === 'mortgageMax')
@@ -103,9 +85,6 @@ export default function useDiagnosis(done) {
     questions,
     answers,
     setAnswers,
-    address,
-    setAddress,
-    addressForm,
     amounts,
     busy,
     error,
