@@ -73,15 +73,20 @@ progress {
   outline: 2px dashed #4978dc;
   outline-offset: 4px;
 }
-.pending-item {
-  background: #eff5ff;
-  border-color: #dce5f2;
+/* 직접 답할 질문은 하늘색 배경 (2차 피드백) */
+.card.pending-item {
+  background: #e3efff;
+  border-color: #b9d3fb;
 }
-.pending-item .badge {
-  color: #2453bd;
-}
+/* 고른 답은 파랑으로 채워요 */
 .choice:has(:checked) {
+  background: #2458d5;
+  border-color: #2458d5;
+  color: #ffffff;
   font-weight: 800;
+}
+.choice:has(:checked) input {
+  accent-color: #ffffff;
 }
 .choice:has(:checked)::after {
   content: '✓' / '';

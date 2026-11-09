@@ -3,7 +3,7 @@ header {
   border-bottom: 1px solid var(--border);
 }
 .nav {
-  height: 70px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -14,6 +14,9 @@ header {
   gap: 12px;
   align-items: center;
 }
+.nav nav button {
+  font-size: 1.02rem;
+}
 .brand {
   display: flex;
   align-items: center;
@@ -21,18 +24,14 @@ header {
   color: #17263d;
   text-decoration: none;
   font-weight: 900;
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   white-space: nowrap;
 }
 .logo {
-  display: grid;
-  place-items: center;
-  color: white;
-  background: var(--blue);
-  border-radius: 11px;
-  width: 34px;
-  height: 34px;
-  font-size: 1.35rem;
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
 }
 footer {
   border-top: 1px solid var(--border);

@@ -236,7 +236,7 @@ export default function Diagnosis({ done, edit }) {
             <Label>등기부 진단 · 3단계 서류 확인 결과</Label>
             {heading(
               pending.length
-                ? `${pending.length}개만 직접 답해 주세요`
+                ? `${pending.length}개만 답해 주세요`
                 : '서류로 10개 모두 확인했어요',
             )}
             <p className="intro">
@@ -254,10 +254,7 @@ export default function Diagnosis({ done, edit }) {
                 <ul className="stack">
                   {pending.map((q) => (
                     <li className="card evidence-item pending-item" key={q.code}>
-                      <p className="evidence-answer">
-                        <span className="badge">직접 답해요</span>
-                        <small className="muted">{q.sectionName}</small>
-                      </p>
+                      <small className="muted">{q.sectionName}</small>
                       <p className="evidence-question">{q.text}</p>
                     </li>
                   ))}
@@ -304,7 +301,7 @@ export default function Diagnosis({ done, edit }) {
               {question.sectionName} · 질문 {step + 1}/{pending.length}
             </Label>
             {heading(question.text)}
-            <p className="intro">{question.help}</p>
+            <p className="intro">※ {question.help}</p>
             {shown?.status === 'CONFIRMED' && (
               <Notice>
                 서류에서는 &lsquo;{answerLabel[shown.answer]}&rsquo;로 읽었어요.

@@ -16,7 +16,7 @@ export const questions = [
     sectionName: '표제부',
     section: 'TITLE',
     order: 2,
-    text: '건물 용도에 아파트·다세대주택·연립주택·다가구주택·단독주택 중 하나가 적혀 있나요?',
+    text: '건물 용도에 아파트 · 다세대주택 · 연립주택 · 다가구주택 · 단독주택 중 하나가 적혀 있나요?',
     needsAmount: false,
     risky: 'NO',
     points: 20,
