@@ -106,6 +106,7 @@ export default function useDiagnosis(done, edit) {
     const invalid =
       (!files.registry && { field: 'registry', message: '등기부등본을 올려 주세요.' }) ||
       fileError('registry', files.registry) ||
+      (!files.buildingLedger && { field: 'buildingLedger', message: '건축물대장을 올려 주세요.' }) ||
       fileError('buildingLedger', files.buildingLedger);
     if (invalid) return setError(invalid);
     setBusy(true);
@@ -160,7 +161,7 @@ export default function useDiagnosis(done, edit) {
         answers: questions.map(({ code }) => ({ code, answer: answers[code] })),
       };
       // 기록 제목(보증금·시세)에 쓰려고 요청 값도 함께 넘겨요.
-      done(await diagnose(request), request);
+      done(await diagnose(request, edit?.id), request);
     } catch (error) {
       const mortgageStep = pending.findIndex((item) => item.needsAmount);
       // 근저당 금액을 질문에서 받았다면 그 질문으로, 아니면 금액 단계 입력칸에 머물러요.

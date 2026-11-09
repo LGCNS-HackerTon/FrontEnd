@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Label from '../../components/common/Label.jsx';
-import { readHistory, formatMoney } from '../../services/history.js';
+import ErrorBox from '../../components/common/ErrorBox.jsx';
+import { readHistory, loadHistory, formatMoney } from '../../services/history.js';
 // shortcut: 질문 문구는 docs/01과 같은 Mock 목록에서 읽어요. 서버 문구가 달라지면 기록에 문구도 저장하도록 바꿔요.
 import { questions } from '../../api/mock/questions.js';
 import { safeScore } from '../../services/score.js';
 import { readChecklist } from '../../services/checklist.js';
-import { readProfile } from '../../services/account.js';
+import { readProfile, loadProfile } from '../../services/account.js';
+import { useMock } from '../../api/client.js';
 import './MyPage.css';
 const answerLabel = { YES: '예', NO: '아니오', UNKNOWN: '모르겠어요' };
 // 기록을 펼치면 금액과 답 10개를 보여주고, 항목별로 고쳐 다시 진단할 수 있어요 (D8).
@@ -59,9 +61,38 @@ function HistoryDetail({ item, edit }) {
   );
 }
 export default function MyPage({ email, start, logout, edit }) {
-  const profile = readProfile(email),
-    history = readHistory(email),
-    checklist = readChecklist(email);
+  // 서버 모드는 내 정보(8번)·내 진단 기록(9번)을 따로 불러와요. 기록을 못 읽어도 로그아웃은 할 수 있게요.
+  const [server, setServer] = useState({});
+  useEffect(() => {
+    if (useMock) return;
+    const put = (value) => setServer((prev) => ({ ...prev, ...value }));
+    loadProfile(email).then(
+      (profile) => put({ profile }),
+      (error) => put({ error }),
+    );
+    loadHistory(email).then(
+      (history) => put({ history }),
+      (historyError) => put({ historyError }),
+    );
+  }, [email]);
+  const { profile, history, error, historyError } = useMock
+    ? { profile: readProfile(email), history: readHistory(email) }
+    : server;
+  const checklist = readChecklist(email);
+  if (!profile)
+    return (
+      <section className="content">
+        <Label>전세역전 계정</Label>
+        <h1>마이페이지</h1>
+        {error ? <ErrorBox error={error} /> : <p className="muted">불러오는 중…</p>}
+        {/* 내 정보를 못 읽어도 로그아웃은 할 수 있게 해요 */}
+        {error && (
+          <button className="logout" onClick={logout}>
+            로그아웃
+          </button>
+        )}
+      </section>
+    );
   const dateFormat = new Intl.DateTimeFormat('ko-KR', {
     dateStyle: 'medium',
     timeZone: 'Asia/Seoul',
@@ -86,9 +117,13 @@ export default function MyPage({ email, start, logout, edit }) {
       <h2 className="section-heading">최근 등기부 진단</h2>
       <p className="muted">
         최근 진단 5건을 처음 진단한 순서로 보여줘요. 조건을 수정해 다시 검토하면 그 기록이 새 결과로
-        바뀌어요. (데모: 이 브라우저에만 저장)
+        바뀌어요.{useMock && ' (데모: 이 브라우저에만 저장)'}
       </p>
-      {history.length ? (
+      {historyError ? (
+        <ErrorBox error={historyError} />
+      ) : !history ? (
+        <p className="muted">불러오는 중…</p>
+      ) : history.length ? (
         <ul className="stack diagnosis-history">
           {history.map((item) => (
             <li className={'card history-item ' + item.grade.toLowerCase()} key={item.id}>

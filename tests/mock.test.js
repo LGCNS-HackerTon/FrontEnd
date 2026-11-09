@@ -31,9 +31,9 @@ test('선순위 보증금 null과 0을 구분',()=>{
  assert.equal(mockDiagnosis(input({seniorDeposit:null})).warnings.length,1);
  assert.equal(mockDiagnosis(input({seniorDeposit:0})).warnings.length,0);
 });
-test('일정 14개와 중요 일정 2개, 같은 날짜의 순서 유지',()=>{
+test('일정 16개와 중요 일정 2개, 같은 날짜의 순서 유지',()=>{
  const result=mockSchedule({contractDate:'2026-11-20',balanceDate:'2026-12-20'});
- assert.equal(result.items.length,14);
+ assert.equal(result.items.length,16);
  assert.deepEqual(result.items.filter(i=>i.important).map(i=>i.order),[9,11]);
  assert.equal(result.expiryDate,'2028-12-20');
  const sorted=[...result.items].sort((a,b)=>a.date.localeCompare(b.date)||a.order-b.order);
@@ -46,11 +46,11 @@ test('윤년과 월말의 만기는 마지막 유효 날짜로 보정',()=>{
 });
 test('OCR Mock은 10개를 순서대로 주고 판독 못 한 답을 NO로 채우지 않음',async()=>{
  const {mockOcr}=await import('../src/api/mock/ocr.js');
- const only=mockOcr({});
- assert.deepEqual(only.answers.map(a=>a.code),questions.map(q=>q.code));
- assert.deepEqual(only.answers.filter(a=>a.status==='UNCONFIRMED').map(a=>a.code),['A1_OWNER','B3_JEONSE_RIGHT','R1_VIOLATION']);
- for(const a of only.answers)assert.equal(a.answer===null,a.status==='UNCONFIRMED');
- const withLedger=mockOcr({buildingLedger:{}});
- assert.equal(withLedger.answers.at(-1).status,'CONFIRMED');
- assert.equal(withLedger.warnings.length,0);
+ const result=mockOcr();
+ assert.deepEqual(result.answers.map(a=>a.code),questions.map(q=>q.code));
+ // 건축물대장은 필수라(D11) 위반건축물은 서류로 확인하고, docs/03 5번 예시처럼 2개만 남는다
+ assert.deepEqual(result.answers.filter(a=>a.status==='UNCONFIRMED').map(a=>a.code),['A1_OWNER','B3_JEONSE_RIGHT']);
+ for(const a of result.answers)assert.equal(a.answer===null,a.status==='UNCONFIRMED');
+ assert.equal(result.answers.at(-1).answer,'NO');
+ assert.equal(result.warnings.length,0);
 });
