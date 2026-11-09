@@ -15,6 +15,9 @@ export default function Result({ result, start }) {
       {result.historySaved === null && (
         <Notice>로그인하면 이 진단 기록을 마이페이지에 저장할 수 있어요.</Notice>
       )}
+      {result.historySaved === true && result.historyUpdated && (
+        <Notice>마이페이지의 기록을 새 조건의 결과로 바꿨어요.</Notice>
+      )}
       {result.historySaved === false && (
         <Notice kind="warning">이 브라우저에 진단 기록을 저장하지 못했어요.</Notice>
       )}

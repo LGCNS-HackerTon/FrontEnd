@@ -13,8 +13,9 @@ const choices = [
 ];
 const answerLabel = Object.fromEntries(choices);
 const ACCEPT = '.jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf';
-export default function Diagnosis({ done }) {
+export default function Diagnosis({ done, edit }) {
   const {
+    editing,
     stage,
     step,
     address,
@@ -41,7 +42,14 @@ export default function Diagnosis({ done }) {
     readDocs,
     answerAll,
     submit,
-  } = useDiagnosis(done);
+  } = useDiagnosis(done, edit);
+  // 기록 수정에서 처음 단계의 '이전'은 마이페이지로 돌아가요.
+  const leave =
+    stage === 'address'
+      ? '/'
+      : editing && (stage === 'question' || edit.target === 'amounts')
+        ? '/mypage'
+        : null;
   const [dragging, setDragging] = useState(null);
   const fieldError = (name) => (error?.field === name ? error.message : null);
   const money = (name, label, required, min, hint) => (
@@ -94,7 +102,7 @@ export default function Diagnosis({ done }) {
       <button
         type="button"
         className="secondary"
-        onClick={() => (stage === 'address' ? go('/') : back())}
+        onClick={() => (leave ? go(leave) : back())}
       >
         이전
       </button>
@@ -130,6 +138,11 @@ export default function Diagnosis({ done }) {
         />
       )}
       <div className="card panel">
+        {editing && (
+          <Notice>
+            마이페이지 기록을 수정하고 있어요. 다시 진단하면 이 기록이 새 결과로 바뀌어요.
+          </Notice>
+        )}
         {stage === 'address' && (
           <form
             onSubmit={(e) => {
@@ -328,7 +341,8 @@ export default function Diagnosis({ done }) {
               )}
             {stepActions(
               <>
-                {step + 1 < pending.length ? '다음 질문' : '금액 입력하기'} {arrow}
+                {editing ? '수정 완료' : step + 1 < pending.length ? '다음 질문' : '금액 입력하기'}{' '}
+                {arrow}
               </>,
             )}
           </form>
@@ -369,7 +383,9 @@ export default function Diagnosis({ done }) {
                 ) : error && !error.field ? (
                   '다시 시도'
                 ) : (
-                  <>진단 결과 보기 {arrow}</>
+                  <>
+                    {editing ? '다시 진단하기' : '진단 결과 보기'} {arrow}
+                  </>
                 ),
               )}
             </fieldset>

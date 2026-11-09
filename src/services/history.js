@@ -29,20 +29,21 @@ export function readHistory(email) {
   }
 }
 
-export function saveDiagnosis(email, result, request) {
+// 마이페이지에서 조건을 고쳐 다시 진단(D8)할 수 있게 입력값(금액·답 10개)도 저장해요. 주소·서류는 저장하지 않아요.
+// replaceId를 주면 그 기록을 새 결과로 덮어쓰고 맨 위로 올려요.
+export function saveDiagnosis(email, result, request, replaceId) {
   const item = {
-    id: crypto.randomUUID(),
+    id: replaceId ?? crypto.randomUUID(),
     location: `보증금 ${formatMoney(request.deposit)} · 시세 ${formatMoney(request.salePrice)}`,
     date: new Date().toISOString(),
     grade: result.grade,
     gradeLabel: result.gradeLabel,
     score: result.score,
+    request,
   };
   try {
-    localStorage.setItem(
-      historyKey(email),
-      JSON.stringify([item, ...readHistory(email)].slice(0, 10)),
-    );
+    const others = readHistory(email).filter((old) => old.id !== item.id);
+    localStorage.setItem(historyKey(email), JSON.stringify([item, ...others].slice(0, 10)));
     return true;
   } catch {
     return false;

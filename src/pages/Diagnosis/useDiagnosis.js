@@ -13,20 +13,27 @@ function fileError(field, file) {
 
 // 진단 입력 상태를 화면과 분리해 이전 단계로 돌아가도 값을 유지해요.
 // 단계: address → upload → review(서류 확인 결과) → question(확인 못 한 질문만) → amounts
-export default function useDiagnosis(done) {
-  const [stage, setStage] = useState('address'),
+// edit가 있으면 마이페이지 기록(edit.request)의 답·금액을 채우고 edit.target(질문 코드 | 'amounts')부터 시작해요.
+export default function useDiagnosis(done, edit) {
+  const saved = edit?.request;
+  const [stage, setStage] = useState(
+      edit ? (edit.target === 'amounts' ? 'amounts' : 'question') : 'address',
+    ),
     [step, setStep] = useState(0),
     [address, setAddress] = useState(''),
     [files, setFiles] = useState({ registry: null, buildingLedger: null }),
     [questions, setQuestions] = useState([]),
     [ocr, setOcr] = useState(null),
     [asked, setAsked] = useState([]),
-    [answers, setAnswers] = useState({});
+    [answers, setAnswers] = useState(() =>
+      saved ? Object.fromEntries(saved.answers.map((a) => [a.code, a.answer])) : {},
+    );
+  const text = (value) => (value === null || value === undefined ? '' : String(value));
   const [amounts, setAmounts] = useState({
-    deposit: '',
-    salePrice: '',
-    seniorDeposit: '',
-    mortgageMax: '',
+    deposit: text(saved?.deposit),
+    salePrice: text(saved?.salePrice),
+    seniorDeposit: text(saved?.seniorDeposit),
+    mortgageMax: answers.B1_MORTGAGE === 'YES' ? text(saved?.mortgageMax) : '',
   });
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(null);
@@ -61,11 +68,15 @@ export default function useDiagnosis(done) {
     if (stage === 'review') return show('upload');
     if (stage === 'question')
       return step > 0 ? show('question', step - 1) : show(ocr ? 'review' : 'upload');
+    if (stage === 'amounts' && edit)
+      return show('question', Math.max(0, pending.findIndex((q) => q.code === edit.target)));
     if (stage === 'amounts')
       return pending.length ? show('question', pending.length - 1) : show('review');
   }
   function next() {
-    if (stage === 'question' && step + 1 < pending.length) return show('question', step + 1);
+    // 기록 수정은 고른 질문만 바꾸고 바로 금액 확인으로 가요.
+    if (!edit && stage === 'question' && step + 1 < pending.length)
+      return show('question', step + 1);
     show('amounts');
   }
 
@@ -82,6 +93,13 @@ export default function useDiagnosis(done) {
     setQuestions(sorted);
     return sorted;
   }
+  useEffect(() => {
+    if (!edit) return;
+    loadQuestions()
+      .then((list) => setStep(Math.max(0, list.findIndex((q) => q.code === edit.target))))
+      .catch(setError);
+    // 수정 모드는 화면이 처음 열릴 때 한 번만 질문을 불러와요 (App이 key로 새로 그려요).
+  }, []);
 
   async function readDocs(e) {
     e.preventDefault();
@@ -159,6 +177,7 @@ export default function useDiagnosis(done) {
   }
 
   return {
+    editing: Boolean(edit),
     stage,
     step,
     address,
