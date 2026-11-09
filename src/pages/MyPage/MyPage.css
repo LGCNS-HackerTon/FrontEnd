@@ -1,0 +1,52 @@
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.profile p {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.profile-initial {
+  display: grid;
+  place-items: center;
+  flex: 0 0 47px;
+  height: 47px;
+  border-radius: 13px;
+  background: #edf3ff;
+  color: var(--blue);
+  font-weight: 850;
+  font-size: 1.2rem;
+}
+.diagnosis-history {
+  margin-top: 13px;
+}
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+}
+.history-item time {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.history-grade {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.history-item.danger .badge {
+  background: #fff1f0;
+  color: #8c2821;
+}
+.history-item.caution .badge {
+  background: #fff6e4;
+  color: #765019;
+}
+.history-item.safe .badge {
+  background: #eaf8f0;
+  color: #195f3b;
+}

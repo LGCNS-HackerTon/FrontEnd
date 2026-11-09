@@ -58,17 +58,16 @@ export default function useDiagnosis(done) {
     setBusy(true);
     setError(null);
     try {
-      done(
-        await diagnose({
-          deposit: Number(amounts.deposit),
-          salePrice: Number(amounts.salePrice),
-          mortgageMax: answers.B1_MORTGAGE === 'YES' ? Number(amounts.mortgageMax) : 0,
-          // 미입력과 실제 0원을 구분해야 서버에서 확인 필요 경고를 보내요.
-          seniorDeposit:
-            amounts.seniorDeposit === '' ? null : Number(amounts.seniorDeposit),
-          answers: questions.map(({ code }) => ({ code, answer: answers[code] })),
-        }),
-      );
+      const request = {
+        deposit: Number(amounts.deposit),
+        salePrice: Number(amounts.salePrice),
+        mortgageMax: answers.B1_MORTGAGE === 'YES' ? Number(amounts.mortgageMax) : 0,
+        // 미입력과 실제 0원을 구분해야 서버에서 확인 필요 경고를 보내요.
+        seniorDeposit: amounts.seniorDeposit === '' ? null : Number(amounts.seniorDeposit),
+        answers: questions.map(({ code }) => ({ code, answer: answers[code] })),
+      };
+      // 기록 제목(보증금·시세)에 쓰려고 요청 값도 함께 넘겨요.
+      done(await diagnose(request), request);
     } catch (error) {
       if (error.code === 'INVALID_INPUT' && error.field === 'mortgageMax')
         setStep(questions.findIndex((item) => item.needsAmount));

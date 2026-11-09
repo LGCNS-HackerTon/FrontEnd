@@ -12,6 +12,12 @@ export default function Result({ result, start }) {
     <section className="content">
       <Label>등기부 진단 결과</Label>
       <h1>계약 전, 이렇게 확인해요</h1>
+      {result.historySaved === null && (
+        <Notice>로그인하면 이 진단 기록을 마이페이지에 저장할 수 있어요.</Notice>
+      )}
+      {result.historySaved === false && (
+        <Notice kind="warning">이 브라우저에 진단 기록을 저장하지 못했어요.</Notice>
+      )}
       <div className={'score card ' + result.grade.toLowerCase()}>
         <div>
           <span className="badge">{result.gradeLabel}</span>
